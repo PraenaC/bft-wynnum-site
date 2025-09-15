@@ -26,7 +26,12 @@ const COACHES = [
 // ---- Session pill with child‑minding badge ----
 const Session = ({ time, child }) => (
   <p className="flex items-center gap-2 text-slate-700">
-    {time} {child && (<span className="flex items-center gap-1 text-xs text-emerald-600 font-medium"><Baby className="w-3 h-3" /> Child‑minding</span>)}
+    {time}{" "}
+    {child && (
+      <span className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
+        {"👶"} Child-minding
+      </span>
+    )}
   </p>
 );
 
