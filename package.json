@@ -15,17 +15,10 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.41",
     "tailwindcss": "^3.4.9",
     "vite": "^5.4.0"
   }
 }
-
-[build]
-  command = "npm run build"
-  publish = "dist"
-
-[functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
