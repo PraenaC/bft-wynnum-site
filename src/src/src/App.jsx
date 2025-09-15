@@ -1,5 +1,2 @@
 import BFTWynnumLanding from "@/BFTWynnumLanding.jsx";
-
-export default function App() {
-  return <BFTWynnumLanding />;
-}
+export default function App() { return <BFTWynnumLanding />; }
