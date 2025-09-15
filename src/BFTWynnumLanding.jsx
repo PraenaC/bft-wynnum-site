@@ -1,8 +1,6 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
--import { Check, Dumbbell, Heart, Clock, MapPin, Phone, Mail, Star, ArrowRight, ChevronDown, Baby } from "lucide-react";
-+import { Check, Dumbbell, Heart, Clock, MapPin, Phone, Mail, Star, ArrowRight, ChevronDown } from "lucide-react";
+import { Check, Dumbbell, Heart, Clock, MapPin, Phone, Mail, Star, ArrowRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
