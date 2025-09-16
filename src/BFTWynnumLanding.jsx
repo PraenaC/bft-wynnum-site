@@ -28,38 +28,33 @@ const COACHES = [
     role: "Owner & Coach",
     bio:
       "Pushes you until you drop and then tells you an awful Dad joke to make you smile.",
-    img:
-      "https://images.unsplash.com/photo-1556817411-31ae72fa3ea0?q=80&w=1200&auto=format&fit=crop",
+    img: "/images/Ben.png",
   },
   {
     name: "Pren",
     role: "Owner & Coach",
     bio: "Our boss girl who brings the energy and keeps the vibe inclusive.",
-    img:
-      "https://images.unsplash.com/photo-1543975200-8e313fb04a9a?q=80&w=1200&auto=format&fit=crop",
+    img: "/images/Pren.png",
   },
   {
     name: "Christian",
     role: "Head Coach",
     bio: "Technique-focused and results-driven. Leads the floor with precision.",
-    img:
-      "https://images.unsplash.com/photo-1586401100295-7a8096fd231f?q=80&w=1200&auto=format&fit=crop",
+    img: "/images/Christian.png",
   },
   {
     name: "Tyneale",
     role: "Coach",
     bio:
       "Supportive and motivating — helping members nail form and confidence.",
-    img:
-      "https://images.unsplash.com/photo-1599058917212-d750089bc07e?q=80&w=1200&auto=format&fit=crop",
+    img: "/images/Tyneale.png",
   },
   {
     name: "Josh",
     role: "Coach",
     bio:
       "Coaching style is a balance of technical excellence and simplicity to help push you to perform well in a safe and enjoyable manner.",
-    img:
-      "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1200&auto=format&fit=crop",
+    img: "/images/Josh.png",
   },
 ];
 
