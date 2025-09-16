@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
    CONFIG / DATA
 ----------------------------- */
 
-// Coaches
+// Coaches (images must be in public/images/)
 const COACHES = [
   {
     name: "Ben",
@@ -498,7 +498,7 @@ export default function BFTWynnumLanding() {
                 <img
                   src={c.img}
                   alt={c.name}
-                  className="h-44 w-full object-cover"
+                  className="w-full h-60 md:h-64 object-cover object-top"
                   loading="lazy"
                 />
                 <CardHeader className="pb-2">
