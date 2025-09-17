@@ -8,7 +8,6 @@ import {
   MapPin,
   Phone,
   Mail,
-  Star,
   ArrowRight,
   ChevronDown,
 } from "lucide-react";
@@ -21,7 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
    CONFIG / DATA
 ========================= */
 
-// Coaches (make sure these files exist in /public/images/)
+// Coach photos must live in /public/images/
 const COACHES = [
   { name: "Ben", role: "Owner & Coach", bio: "Pushes you until you drop and then tells you an awful Dad joke to make you smile.", img: "/images/Ben.png" },
   { name: "Pren", role: "Owner & Coach", bio: "Our boss girl who brings the energy and keeps the vibe inclusive.", img: "/images/Pren.png" },
@@ -65,7 +64,7 @@ const FaqItem = ({ q, a }) => {
   const [open, setOpen] = useState(false);
   return (
     <div className="border-b">
-      <button onClick={() => setOpen(v => !v)} className="w-full flex items-center justify-between py-4 text-left">
+      <button onClick={() => setOpen((v) => !v)} className="w-full flex items-center justify-between py-4 text-left">
         <span className="font-medium text-slate-800">{q}</span>
         <ChevronDown className={`w-5 h-5 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
@@ -130,17 +129,17 @@ const LocalBusinessSchema = () => {
 };
 
 /* =========================
-   MAIN PAGE COMPONENT
+   MAIN PAGE
 ========================= */
 
 export default function BFTWynnumLanding() {
-  const [email, setEmail]   = useState("");
-  const [name, setName]     = useState("");
-  const [phone, setPhone]   = useState("");
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError]   = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -149,14 +148,19 @@ export default function BFTWynnumLanding() {
     try {
       const payload = { name, email, phone, message };
       const res = await fetch("/.netlify/functions/wingman-lead", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error(`Submit responded ${res.status}`);
-      setSubmitted(true); setName(""); setEmail(""); setPhone(""); setMessage("");
+      setSubmitted(true);
+      setName(""); setEmail(""); setPhone(""); setMessage("");
     } catch (err) {
       console.error(err);
       setError("Sorry, something went wrong. Please try again or contact us directly.");
-    } finally { setSubmitting(false); }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -168,7 +172,8 @@ export default function BFTWynnumLanding() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <a href="#home" className="flex items-center gap-2 font-bold">
-              <Dumbbell className="w-5 h-5" /><span>BFT Wynnum</span>
+              <Dumbbell className="w-5 h-5" />
+              <span>BFT Wynnum</span>
             </a>
             <nav className="hidden md:flex items-center gap-6 text-sm">
               <a href="#offer" className="hover:text-slate-900 text-slate-600">Kickstart</a>
@@ -180,7 +185,9 @@ export default function BFTWynnumLanding() {
               <a href="#contact" className="hover:text-slate-900 text-slate-600">Contact</a>
             </nav>
             <div className="hidden md:block">
-              <Button asChild className="rounded-2xl"><a href="#offer">Start 28 Day Kickstart</a></Button>
+              <Button asChild className="rounded-2xl">
+                <a href="#offer">Start 28 Day Kickstart</a>
+              </Button>
             </div>
           </div>
         </div>
@@ -199,10 +206,18 @@ export default function BFTWynnumLanding() {
         <div className="max-w-6xl mx-auto px-4 py-20 md:py-28 grid md:grid-cols-2 gap-10 items-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">Stronger. Fitter. Together.</h1>
-            <p className="mt-4 text-lg text-slate-700">Join our <span className="font-semibold">28 Day Kickstart</span> — science-backed group training blending strength, cardio and progressive programming.</p>
+            <p className="mt-4 text-lg text-slate-700">
+              Join our <span className="font-semibold">28 Day Kickstart</span> — science-backed group training blending strength, cardio and progressive programming.
+            </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              <Button asChild className="rounded-2xl"><a href="#offer" className="flex items-center gap-2">Start 28 Day Kickstart <ArrowRight className="w-4 h-4" /></a></Button>
-              <Button asChild className="rounded-2xl"><a href="#timetable">View Timetable</a></Button>
+              <Button asChild className="rounded-2xl">
+                <a href="#offer" className="flex items-center gap-2">
+                  Start 28 Day Kickstart <ArrowRight className="w-4 h-4" />
+                </a>
+              </Button>
+              <Button asChild className="rounded-2xl">
+                <a href="#timetable">View Timetable</a>
+              </Button>
             </div>
             <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-slate-600">
               <div className="flex items-center gap-2"><Heart className="w-4 h-4" /> Heart-rate tech</div>
@@ -215,7 +230,7 @@ export default function BFTWynnumLanding() {
             <Card className="rounded-2xl shadow-xl border-slate-200">
               <CardHeader>
                 <CardTitle className="text-2xl">Claim Your Kickstart</CardTitle>
-                <p className="text-slate-600">Level Up Your Training — limited spots each intake. We’ll be in touch to lock in your first session and personalise your plan.</p>
+                <p className="text-slate-600">New members only — limited spots each intake. We’ll be in touch to lock in your first session and personalise your plan.</p>
               </CardHeader>
               <CardContent>
                 {submitted ? (
@@ -225,12 +240,14 @@ export default function BFTWynnumLanding() {
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-3">
-                    <Input required placeholder="Full name" value={name} onChange={e => setName(e.target.value)} />
-                    <Input required type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
-                    <Input required type="tel" placeholder="Mobile" value={phone} onChange={e => setPhone(e.target.value)} />
-                    <Textarea placeholder="Any questions or goals?" value={message} onChange={e => setMessage(e.target.value)} />
+                    <Input required placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} />
+                    <Input required type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <Input required type="tel" placeholder="Mobile" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                    <Textarea placeholder="Any questions or goals?" value={message} onChange={(e) => setMessage(e.target.value)} />
                     {error && <p className="text-sm text-red-600">{error}</p>}
-                    <Button type="submit" disabled={submitting} className="w-full rounded-2xl">{submitting ? "Sending..." : "Start Kickstart"}</Button>
+                    <Button type="submit" disabled={submitting} className="w-full rounded-2xl">
+                      {submitting ? "Sending..." : "Start Kickstart"}
+                    </Button>
                     <p className="text-xs text-slate-500">By submitting, you agree to be contacted about your enquiry. No spam.</p>
                   </form>
                 )}
@@ -245,10 +262,20 @@ export default function BFTWynnumLanding() {
         <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-3 gap-6 items-stretch">
           <div className="md:col-span-2">
             <h2 className="text-3xl font-bold">28 Day Kickstart</h2>
-            <p className="mt-3 text-slate-600">Your first month structured for momentum. Build habits, learn technique, and see measurable progress with coach support.</p>
+            <p className="mt-3 text-slate-600">
+              Your first month structured for momentum. Build habits, learn technique, and see measurable progress with coach support.
+            </p>
             <ul className="mt-6 grid sm:grid-cols-2 gap-3 text-slate-700">
-              {["4 curated weeks of progressive training","Technique coaching every session","Heart-rate tiles & progress tracking","Access to all program types (Strength, Cardio, Hybrid)"].map(f => (
-                <li key={f} className="flex items-start gap-2"><Check className="w-5 h-5 mt-0.5" /><span>{f}</span></li>
+              {[
+                "4 curated weeks of progressive training",
+                "Technique coaching every session",
+                "Heart-rate tiles & progress tracking",
+                "Access to all program types (Strength, Cardio, Hybrid)",
+              ].map((f) => (
+                <li key={f} className="flex items-start gap-2">
+                  <Check className="w-5 h-5 mt-0.5" />
+                  <span>{f}</span>
+                </li>
               ))}
             </ul>
             <div className="mt-6 flex gap-3">
@@ -256,14 +283,19 @@ export default function BFTWynnumLanding() {
               <Button asChild className="rounded-2xl"><a href="#faqs">What’s included</a></Button>
             </div>
           </div>
+
+          {/* Replace the src below with /images/GroupShot.png if your file is PNG */}
           <Card className="overflow-hidden rounded-2xl border-slate-200">
-          <img
-  src="/images/GroupShot.jpg"
-  alt="BFT Wynnum members training in-studio"
-  className="h-44 w-full object-cover object-top"
-  loading="lazy"
-/>
-              <p className="text-sm text-slate-600">“The best training community in Wynnum. Coaches actually coach and the programming keeps me progressing.”</p>
+            <img
+              src="/images/GroupShot.jpg"
+              alt="BFT Wynnum members training in-studio"
+              className="h-56 w-full object-cover object-top"
+              loading="lazy"
+            />
+            <CardContent className="p-6">
+              <p className="text-sm text-slate-600">
+                “The best training community in Wynnum. Coaches actually coach and the programming keeps me progressing.”
+              </p>
               <p className="mt-3 text-sm font-medium">— Member review</p>
             </CardContent>
           </Card>
@@ -274,7 +306,9 @@ export default function BFTWynnumLanding() {
       <section id="why" className="py-16 bg-white/60">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold">Why Train at BFT Wynnum</h2>
-          <p className="mt-3 text-slate-600 max-w-3xl">We keep it real: great coaching, progressive programming, and an inclusive vibe where you’ll actually want to show up. Our 28 Day Kickstart gets you moving safely, building confidence, and slotting training into your week without overwhelm.</p>
+          <p className="mt-3 text-slate-600 max-w-3xl">
+            We keep it real: great coaching, progressive programming, and an inclusive vibe where you’ll actually want to show up. Our 28 Day Kickstart gets you moving safely, building confidence, and slotting training into your week without overwhelm.
+          </p>
           <div className="mt-8 grid md:grid-cols-3 gap-6">
             <Feature icon={Dumbbell} title="Progressive Strength" text="Build a strong foundation with coach-led technique and structured progressions." />
             <Feature icon={Heart} title="Smarter Cardio" text="Train in the right heart-rate zones to burn calories and boost endurance efficiently." />
@@ -289,7 +323,7 @@ export default function BFTWynnumLanding() {
           <h2 className="text-3xl font-bold">Meet Your Coaches</h2>
           <p className="mt-2 text-slate-600">Technique-obsessed, friendly, and here for your progress.</p>
           <div className="mt-8 grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {COACHES.map(c => (
+            {COACHES.map((c) => (
               <Card key={c.name} className="overflow-hidden rounded-2xl border-slate-200">
                 {/* Taller height + object-top keeps heads visible */}
                 <img src={c.img} alt={c.name} className="w-full h-56 sm:h-64 object-cover object-top" loading="lazy" />
@@ -315,7 +349,7 @@ export default function BFTWynnumLanding() {
             <Button asChild className="rounded-2xl"><a href="#contact">Ask About Session Times</a></Button>
           </div>
           <div className="mt-8 grid md:grid-cols-3 gap-6">
-            {TIMETABLE.map(col => (
+            {TIMETABLE.map((col) => (
               <Card key={col.group} className="rounded-2xl border-slate-200">
                 <CardHeader><CardTitle>{col.group}</CardTitle></CardHeader>
                 <CardContent className="text-slate-600 text-sm space-y-2">
@@ -324,7 +358,9 @@ export default function BFTWynnumLanding() {
               </Card>
             ))}
           </div>
-          <p className="mt-4 text-xs text-slate-500">👶 Child-minding available at 9:15am Mon–Fri, 4:00pm Mon & Wed, and 8:00am & 9:15am Saturday.</p>
+          <p className="mt-4 text-xs text-slate-500">
+            👶 Child-minding available at 9:15am Mon–Fri, 4:00pm Mon & Wed, and 8:00am & 9:15am Saturday.
+          </p>
         </div>
       </section>
 
@@ -370,13 +406,15 @@ export default function BFTWynnumLanding() {
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-3">
                     <div className="grid sm:grid-cols-2 gap-3">
-                      <Input required placeholder="Full name" value={name} onChange={e => setName(e.target.value)} />
-                      <Input required type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
+                      <Input required placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} />
+                      <Input required type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
                     </div>
-                    <Input required type="tel" placeholder="Mobile" value={phone} onChange={e => setPhone(e.target.value)} />
-                    <Textarea rows={5} placeholder="Your message (goals, preferred times, injuries, etc.)" value={message} onChange={e => setMessage(e.target.value)} />
+                    <Input required type="tel" placeholder="Mobile" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                    <Textarea rows={5} placeholder="Your message (goals, preferred times, injuries, etc.)" value={message} onChange={(e) => setMessage(e.target.value)} />
                     {error && <p className="text-sm text-red-600">{error}</p>}
-                    <Button type="submit" disabled={submitting} className="w-full rounded-2xl">{submitting ? "Sending..." : "Send Message"}</Button>
+                    <Button type="submit" disabled={submitting} className="w-full rounded-2xl">
+                      {submitting ? "Sending..." : "Send Message"}
+                    </Button>
                   </form>
                 )}
               </CardContent>
