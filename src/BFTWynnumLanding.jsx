@@ -322,13 +322,13 @@ export default function BFTWynnumLanding() {
           <Card className="overflow-hidden rounded-2xl border-slate-200">
             {/* Offer image */}
             <img
-              src="/images/GroupShot.jpg?v=2"
+              src="/images/GroupShot.jpg?v=3"
               alt="BFT Wynnum members training in-studio"
               className="h-56 w-full object-cover object-top"
               loading="lazy"
               onError={(e) => {
                 // fallback to PNG if JPG isn't present
-                e.currentTarget.src = "/images/GroupShot.png?v=2";
+                e.currentTarget.src = "/images/GroupShot.png?v=3";
               }}
             />
             <CardContent className="p-6">
