@@ -283,15 +283,20 @@ export default function BFTWynnumLanding() {
               <Button asChild className="rounded-2xl"><a href="#faqs">What’s included</a></Button>
             </div>
           </div>
-
-          {/* Replace the src below with /images/GroupShot.png if your file is PNG */}
-          <Card className="overflow-hidden rounded-2xl border-slate-200">
-            <img
-              src="/images/GroupShot.jpg"
-              alt="BFT Wynnum members training in-studio"
-              className="h-56 w-full object-cover object-top"
-              loading="lazy"
-            />
+{/* Offer image */}
+<img
+  src="/images/GroupShot.jpg?v=1"
+  alt="BFT Wynnum members training in-studio"
+  className="h-56 w-full object-cover object-top"
+  loading="lazy"
+  onError={(e) => {
+    // Try PNG if JPG isn't found
+    if (!e.currentTarget.dataset.triedPng) {
+      e.currentTarget.dataset.triedPng = "1";
+      e.currentTarget.src = "/images/GroupShot.png?v=1";
+    }
+  }}
+/>
             <CardContent className="p-6">
               <p className="text-sm text-slate-600">
                 “The best training community in Wynnum. Coaches actually coach and the programming keeps me progressing.”
