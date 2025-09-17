@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Check,
@@ -197,6 +197,48 @@ const FaqItem = ({ q, a }) => {
 /* -----------------------------
    MAIN COMPONENT
 ----------------------------- */
+// --- Google Reviews via Elfsight (no Google Cloud needed) ---
+const ElfsightReviews = () => {
+  useEffect(() => {
+    const SRC = "https://elfsightcdn.com/platform.js";
+
+    // Avoid adding the script twice
+    if (!document.querySelector(`script[src="${SRC}"]`)) {
+      const s = document.createElement("script");
+      s.src = SRC;
+      s.async = true;
+      document.body.appendChild(s);
+      s.onload = () => {
+        // Ask Elfsight to scan the page once script is ready
+        if (window.ELFSIGHT?.reload) window.ELFSIGHT.reload();
+      };
+    } else {
+      // Script already present — just trigger a re-scan
+      if (window.ELFSIGHT?.reload) window.ELFSIGHT.reload();
+    }
+  }, []);
+
+  return (
+    <section id="reviews" className="py-16">
+      <div className="max-w-6xl mx-auto px-4">
+        <h2 className="text-3xl font-bold">Google Reviews</h2>
+        <p className="mt-2 text-slate-600">
+          What our members say about BFT Wynnum.
+        </p>
+
+        <div className="mt-6">
+          {/* Your Elfsight widget container */}
+          <div
+            className="elfsight-app-3bde9cac-d178-4084-bdf5-1fa57984f813"
+            data-elfsight-app-lazy
+          />
+        </div>
+
+        <p className="mt-3 text-xs text-slate-500">Powered by Google.</p>
+      </div>
+    </section>
+  );
+};
 
 export default function BFTWynnumLanding() {
   const [email, setEmail] = useState("");
@@ -548,27 +590,8 @@ export default function BFTWynnumLanding() {
       </section>
 
       {/* RESULTS */}
-      <section id="results" className="py-16 bg-white/60">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl font-bold">Real People. Real Results.</h2>
-          <p className="mt-2 text-slate-600">
-            Our community lifts each other up — and the outcomes speak for themselves.
-          </p>
-          <div className="mt-8 grid md:grid-cols-3 gap-6">
-            <Testimonial
-              quote="Dropped 6kg and nailed my first pull-up!"
-              name="Jess"
-              subtitle="Member, 8 months"
-            />
-            <Testimonial
-              quote="Coaches actually coach — my form and confidence have skyrocketed."
-              name="Sam"
-              subtitle="Member, 1 year"
-            />
-            <Testimonial
-              quote="Love the variety. I never get bored and I keep improving."
-              name="Luca"
-              subtitle="Member, 5 months"
+   {/* GOOGLE REVIEWS (live) */}
+<ElfsightReviews />
             />
           </div>
         </div>
