@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
    CONFIG / DATA
 ========================= */
 
-// Coaches (images should be in /public/images/)
+// Coaches (images placed in /public/images/)
 const COACHES = [
   {
     name: "Ben",
@@ -201,7 +201,6 @@ const FaqItem = ({ q, a }) => {
 const ElfsightReviews = () => {
   useEffect(() => {
     const SRC = "https://elfsightcdn.com/platform.js";
-    // avoid double-injecting the script
     if (!document.querySelector(`script[src="${SRC}"]`)) {
       const s = document.createElement("script");
       s.src = SRC;
@@ -223,7 +222,6 @@ const ElfsightReviews = () => {
           What our members say about BFT Wynnum.
         </p>
         <div className="mt-6">
-          {/* Your live widget container from Elfsight */}
           <div
             className="elfsight-app-3bde9cac-d178-4084-bdf5-1fa57984f813"
             data-elfsight-app-lazy
@@ -233,6 +231,38 @@ const ElfsightReviews = () => {
       </div>
     </section>
   );
+};
+
+/* =========================
+   JSON-LD (added to <head>)
+========================= */
+
+const LocalBusinessSchema = () => {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "HealthClub",
+      name: "BFT Wynnum",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "66 Edith St",
+        addressLocality: "Wynnum",
+        addressRegion: "QLD",
+        postalCode: "4178",
+        addressCountry: "AU",
+      },
+      telephone: "+61413496289",
+      url: "https://REPLACE-YOUR-DOMAIN",
+      priceRange: "$$",
+    });
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+  return null;
 };
 
 /* =========================
@@ -281,6 +311,8 @@ export default function BFTWynnumLanding() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900">
+      <LocalBusinessSchema />
+
       {/* NAVBAR */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200">
         <div className="max-w-6xl mx-auto px-4">
@@ -618,7 +650,7 @@ export default function BFTWynnumLanding() {
         </div>
       </section>
 
-      {/* GOOGLE REVIEWS (live via Elfsight) */}
+      {/* GOOGLE REVIEWS */}
       <ElfsightReviews />
 
       {/* FAQS */}
@@ -760,29 +792,6 @@ export default function BFTWynnumLanding() {
           </div>
         </div>
       </footer>
-
-      {/* Local Business JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "HealthClub",
-            name: "BFT Wynnum",
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: "66 Edith St",
-              addressLocality: "Wynnum",
-              addressRegion: "QLD",
-              postalCode: "4178",
-              addressCountry: "AU",
-            },
-            telephone: "+61413496289",
-            url: "https://REPLACE-YOUR-DOMAIN",
-            priceRange: "$$",
-          }),
-        }}
-      />
     </div>
   );
 }
