@@ -257,8 +257,12 @@ export default function BFTWynnumLanding() {
             </div>
           </div>
           <Card className="overflow-hidden rounded-2xl border-slate-200">
-            <img src="https://images.unsplash.com/photo-1517963628607-235ccdd5476f?q=80&w=1500&auto=format&fit=crop" alt="Athletes working out at a studio" className="h-44 w-full object-cover" loading="lazy" />
-            <CardContent className="p-6">
+          <img
+  src="/images/GroupShot.jpg"
+  alt="BFT Wynnum members training in-studio"
+  className="h-44 w-full object-cover object-top"
+  loading="lazy"
+/>
               <p className="text-sm text-slate-600">“The best training community in Wynnum. Coaches actually coach and the programming keeps me progressing.”</p>
               <p className="mt-3 text-sm font-medium">— Member review</p>
             </CardContent>
