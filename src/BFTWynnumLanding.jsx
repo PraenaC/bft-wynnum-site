@@ -17,11 +17,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-/* -----------------------------
+/* =========================
    CONFIG / DATA
------------------------------ */
+========================= */
 
-// Coaches (images must be in public/images/)
+// Coaches (images should be in /public/images/)
 const COACHES = [
   {
     name: "Ben",
@@ -46,7 +46,7 @@ const COACHES = [
     name: "Tyneale",
     role: "Coach",
     bio:
-      "Driven by encourgaement & purpose - helping members move with intention & confidence every session.",
+      "Supportive and motivating — helping members nail form and confidence.",
     img: "/images/Tyneale.png",
   },
   {
@@ -130,9 +130,9 @@ const TIMETABLE = [
   },
 ];
 
-/* -----------------------------
+/* =========================
    SMALL COMPONENTS
------------------------------ */
+========================= */
 
 const Session = ({ time, child }) => (
   <p className="flex items-center gap-2 text-slate-700">
@@ -194,26 +194,23 @@ const FaqItem = ({ q, a }) => {
   );
 };
 
-/* -----------------------------
-   MAIN COMPONENT
------------------------------ */
-// --- Google Reviews via Elfsight (no Google Cloud needed) ---
+/* =========================
+   ELFSIGHT GOOGLE REVIEWS
+========================= */
+
 const ElfsightReviews = () => {
   useEffect(() => {
     const SRC = "https://elfsightcdn.com/platform.js";
-
-    // Avoid adding the script twice
+    // avoid double-injecting the script
     if (!document.querySelector(`script[src="${SRC}"]`)) {
       const s = document.createElement("script");
       s.src = SRC;
       s.async = true;
       document.body.appendChild(s);
       s.onload = () => {
-        // Ask Elfsight to scan the page once script is ready
         if (window.ELFSIGHT?.reload) window.ELFSIGHT.reload();
       };
     } else {
-      // Script already present — just trigger a re-scan
       if (window.ELFSIGHT?.reload) window.ELFSIGHT.reload();
     }
   }, []);
@@ -225,20 +222,22 @@ const ElfsightReviews = () => {
         <p className="mt-2 text-slate-600">
           What our members say about BFT Wynnum.
         </p>
-
         <div className="mt-6">
-          {/* Your Elfsight widget container */}
+          {/* Your live widget container from Elfsight */}
           <div
             className="elfsight-app-3bde9cac-d178-4084-bdf5-1fa57984f813"
             data-elfsight-app-lazy
           />
         </div>
-
         <p className="mt-3 text-xs text-slate-500">Powered by Google.</p>
       </div>
     </section>
   );
 };
+
+/* =========================
+   MAIN PAGE COMPONENT
+========================= */
 
 export default function BFTWynnumLanding() {
   const [email, setEmail] = useState("");
@@ -249,7 +248,7 @@ export default function BFTWynnumLanding() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // Netlify function -> Wingman CRM
+  // Submit to Netlify Function -> Wingman CRM
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -311,6 +310,9 @@ export default function BFTWynnumLanding() {
                 className="hover:text-slate-900 text-slate-600"
               >
                 Results
+              </a>
+              <a href="#reviews" className="hover:text-slate-900 text-slate-600">
+                Reviews
               </a>
               <a href="#faqs" className="hover:text-slate-900 text-slate-600">
                 FAQs
@@ -387,7 +389,7 @@ export default function BFTWynnumLanding() {
               <CardHeader>
                 <CardTitle className="text-2xl">Claim Your Kickstart</CardTitle>
                 <p className="text-slate-600">
-                  Level up your training — limited spots each intake. We’ll be in
+                  New members only — limited spots each intake. We’ll be in
                   touch to lock in your first session and personalise your plan.
                 </p>
               </CardHeader>
@@ -540,7 +542,7 @@ export default function BFTWynnumLanding() {
                 <img
                   src={c.img}
                   alt={c.name}
-                  className="w-full h-60 md:h-64 object-cover object-top"
+                  className="h-44 w-full object-cover"
                   loading="lazy"
                 />
                 <CardHeader className="pb-2">
@@ -590,12 +592,34 @@ export default function BFTWynnumLanding() {
       </section>
 
       {/* RESULTS */}
-   {/* GOOGLE REVIEWS (live) */}
-<ElfsightReviews />
+      <section id="results" className="py-16 bg-white/60">
+        <div className="max-w-6xl mx-auto px-4">
+          <h2 className="text-3xl font-bold">Real People. Real Results.</h2>
+          <p className="mt-2 text-slate-600">
+            Our community lifts each other up — and the outcomes speak for themselves.
+          </p>
+          <div className="mt-8 grid md:grid-cols-3 gap-6">
+            <Testimonial
+              quote="Dropped 6kg and nailed my first pull-up!"
+              name="Jess"
+              subtitle="Member, 8 months"
+            />
+            <Testimonial
+              quote="Coaches actually coach — my form and confidence have skyrocketed."
+              name="Sam"
+              subtitle="Member, 1 year"
+            />
+            <Testimonial
+              quote="Love the variety. I never get bored and I keep improving."
+              name="Luca"
+              subtitle="Member, 5 months"
             />
           </div>
         </div>
       </section>
+
+      {/* GOOGLE REVIEWS (live via Elfsight) */}
+      <ElfsightReviews />
 
       {/* FAQS */}
       <section id="faqs" className="py-16">
