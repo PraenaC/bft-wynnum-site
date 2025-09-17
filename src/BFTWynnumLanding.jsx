@@ -46,7 +46,7 @@ const COACHES = [
     name: "Tyneale",
     role: "Coach",
     bio:
-      "Supportive and motivating — helping members nail form and confidence.",
+      "Driven by encourgaement & purpose - helping members move with intention & confidence every session.",
     img: "/images/Tyneale.png",
   },
   {
@@ -345,7 +345,7 @@ export default function BFTWynnumLanding() {
               <CardHeader>
                 <CardTitle className="text-2xl">Claim Your Kickstart</CardTitle>
                 <p className="text-slate-600">
-                  New members only — limited spots each intake. We’ll be in
+                  Level up your training — limited spots each intake. We’ll be in
                   touch to lock in your first session and personalise your plan.
                 </p>
               </CardHeader>
