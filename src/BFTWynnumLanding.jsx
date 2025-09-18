@@ -16,48 +16,52 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-/* ---------------------------------
-   CONFIG / DATA
----------------------------------- */
+/* ------------------------------------------
+   Helpers / constants
+------------------------------------------- */
 
-// Coaches — use the exact filenames you uploaded to /public/images
+// Safe image path helper (works on Netlify + cache busting when needed)
+const IMG = (file, v = "") =>
+  `${import.meta?.env?.BASE_URL ?? "/"}images/${file}${v}`;
+
+// Coaches (keeps heads in-frame with object-top + consistent height)
 const COACHES = [
   {
     name: "Ben",
     role: "Owner & Coach",
     bio:
       "Pushes you until you drop and then tells you an awful Dad joke to make you smile.",
-    img: "/images/Ben.png",
+    img: IMG("Ben.png"),
   },
   {
     name: "Pren",
     role: "Owner & Coach",
     bio: "Our boss girl who brings the energy and keeps the vibe inclusive.",
-    img: "/images/Pren.png",
+    img: IMG("Pren.png"),
   },
   {
     name: "Christian",
     role: "Head Coach",
     bio: "Technique-focused and results-driven. Leads the floor with precision.",
-    img: "/images/Christian.png",
+    img: IMG("Christian.png"),
   },
   {
     name: "Tyneale",
     role: "Coach",
     bio:
       "Supportive and motivating — helping members nail form and confidence.",
-    img: "/images/Tyneale.png",
+    img: IMG("Tyneale.png"),
   },
   {
     name: "Josh",
     role: "Coach",
     bio:
       "Coaching style is a balance of technical excellence and simplicity to help push you to perform well in a safe and enjoyable manner.",
-    img: "/images/Josh.png",
+    img: IMG("Josh.png"),
   },
 ];
 
-// Timetable
+// Timetable (with child-minding flags)
 const TIMETABLE = [
   {
     group: "Monday",
@@ -129,9 +133,9 @@ const TIMETABLE = [
   },
 ];
 
-/* ---------------------------------
-   SMALL COMPONENTS
----------------------------------- */
+/* ------------------------------------------
+   Small UI bits
+------------------------------------------- */
 
 const Session = ({ time, child }) => (
   <p className="flex items-center gap-2 text-slate-700">
@@ -170,7 +174,9 @@ const FaqItem = ({ q, a }) => {
       >
         <span className="font-medium text-slate-800">{q}</span>
         <ChevronDown
-          className={`w-5 h-5 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`w-5 h-5 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
         />
       </button>
       {open && <p className="pb-4 text-slate-600">{a}</p>}
@@ -178,11 +184,12 @@ const FaqItem = ({ q, a }) => {
   );
 };
 
-/* ---------------------------------
-   MAIN COMPONENT
----------------------------------- */
+/* ------------------------------------------
+   Main component
+------------------------------------------- */
 
 export default function BFTWynnumLanding() {
+  // Contact form state
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -191,9 +198,9 @@ export default function BFTWynnumLanding() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // Load Elfsight script once (Google Reviews)
+  // Load Elfsight script once for Google Reviews
   useEffect(() => {
-    const id = "elfsight-platform";
+    const id = "elfsight-platform-script";
     if (!document.getElementById(id)) {
       const s = document.createElement("script");
       s.id = id;
@@ -282,20 +289,22 @@ export default function BFTWynnumLanding() {
         </div>
       </header>
 
-      {/* HERO / HOME (anchor only) */}
-      <section id="home" />
-
-      {/* OFFER (the card on the right has your GroupShot) */}
-      <section id="offer" className="py-16">
-        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-3 gap-6 items-stretch">
-          <div className="md:col-span-2">
-            <h1 className="text-3xl md:text-4xl font-extrabold leading-tight">
+      {/* HERO / KICKSTART INTRO */}
+      <section id="home" className="py-16">
+        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-10 items-start">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
               28 Day Kickstart
             </h1>
-            <p className="mt-3 text-slate-600">
+            <p className="mt-4 text-lg text-slate-700">
               Your first month structured for momentum. Build habits, learn
               technique, and see measurable progress with coach support.
             </p>
+
             <ul className="mt-6 grid sm:grid-cols-2 gap-3 text-slate-700">
               {[
                 "4 curated weeks of progressive training",
@@ -309,27 +318,26 @@ export default function BFTWynnumLanding() {
                 </li>
               ))}
             </ul>
-            <div className="mt-6 flex gap-3">
+
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Button asChild className="rounded-2xl">
-                <a href="#contact">Get Started</a>
+                <a href="#offer" className="flex items-center gap-2">
+                  Get Started <ArrowRight className="w-4 h-4" />
+                </a>
               </Button>
               <Button asChild variant="outline" className="rounded-2xl">
                 <a href="#faqs">What’s included</a>
               </Button>
             </div>
-          </div>
+          </motion.div>
 
+          {/* Offer card with GroupShot image */}
           <Card className="overflow-hidden rounded-2xl border-slate-200">
-            {/* Offer image */}
             <img
-              src="/images/GroupShot.jpg?v=3"
+              src={IMG("GroupShot.jpg", "?v=4")}
               alt="BFT Wynnum members training in-studio"
               className="h-56 w-full object-cover object-top"
               loading="lazy"
-              onError={(e) => {
-                // fallback to PNG if JPG isn't present
-                e.currentTarget.src = "/images/GroupShot.png?v=3";
-              }}
             />
             <CardContent className="p-6">
               <p className="text-sm text-slate-600">
@@ -438,15 +446,15 @@ export default function BFTWynnumLanding() {
       <section id="reviews" className="py-16 bg-white/60">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold">Reviews</h2>
-          <Card className="mt-6 rounded-2xl border-slate-200">
-            <CardContent className="pt-6">
-              {/* Elfsight Google Reviews */}
-              <div
-                className="elfsight-app-3bde9cac-d178-4084-bdf5-1fa57984f813"
-                data-elfsight-app-lazy
-              />
-            </CardContent>
-          </Card>
+          <p className="mt-2 text-slate-600">
+            Real feedback from members training at BFT Wynnum.
+          </p>
+
+          {/* Your Elfsight widget */}
+          <div
+            className="elfsight-app-3bde9cac-d178-4084-bdf5-1fa57984f813"
+            data-elfsight-app-lazy
+          />
         </div>
       </section>
 
@@ -489,12 +497,15 @@ export default function BFTWynnumLanding() {
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />{" "}
-                <a href="mailto:wynnum@bodyfittraining.com" className="underline">
+                <a
+                  href="mailto:wynnum@bodyfittraining.com"
+                  className="underline"
+                >
                   wynnum@bodyfittraining.com
                 </a>
               </p>
               <div className="pt-2">
-                <Button asChild className="rounded-2xl">
+                <Button asChild variant="outline" className="rounded-2xl">
                   <a
                     href="https://maps.google.com/?q=66%20Edith%20St%20Wynnum%204178"
                     target="_blank"
@@ -506,16 +517,20 @@ export default function BFTWynnumLanding() {
               </div>
             </div>
           </div>
+
           <div>
             <h2 className="text-3xl font-bold">Ask a Question</h2>
             <p className="mt-2 text-slate-600">
-              Tell us your goals and we’ll recommend the best sessions to start with.
+              Tell us your goals and we’ll recommend the best sessions to start
+              with.
             </p>
             <Card className="mt-4 rounded-2xl border-slate-200">
               <CardContent className="pt-6">
                 {submitted ? (
                   <div className="text-center py-8">
-                    <h3 className="text-xl font-semibold">Thanks! We’ll be in touch.</h3>
+                    <h3 className="text-xl font-semibold">
+                      Thanks! We’ll be in touch.
+                    </h3>
                     <p className="text-slate-600 mt-2">Keep an eye on your inbox.</p>
                   </div>
                 ) : (
@@ -567,7 +582,7 @@ export default function BFTWynnumLanding() {
         </div>
       </section>
 
-      {/* FOOTER + Local Business JSON-LD */}
+      {/* FOOTER */}
       <footer className="py-10 border-t bg-white/80">
         <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-600">
@@ -588,30 +603,30 @@ export default function BFTWynnumLanding() {
             </a>
           </div>
         </div>
-
-        {/* Local Business JSON-LD */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "HealthClub",
-              name: "BFT Wynnum",
-              address: {
-                "@type": "PostalAddress",
-                streetAddress: "66 Edith St",
-                addressLocality: "Wynnum",
-                addressRegion: "QLD",
-                postalCode: "4178",
-                addressCountry: "AU",
-              },
-              telephone: "+61413496289",
-              url: "https://REPLACE-YOUR-DOMAIN",
-              priceRange: "$$",
-            }),
-          }}
-        />
       </footer>
+
+      {/* Local Business JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "HealthClub",
+            name: "BFT Wynnum",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "66 Edith St",
+              addressLocality: "Wynnum",
+              addressRegion: "QLD",
+              postalCode: "4178",
+              addressCountry: "AU",
+            },
+            telephone: "+61413496289",
+            url: "https://REPLACE-YOUR-DOMAIN",
+            priceRange: "$$",
+          }),
+        }}
+      />
     </div>
   );
 }
