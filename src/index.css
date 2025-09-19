@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root {
-  height: 100%;
+@layer base {
+  html, body { @apply font-body text-slate-900; }
+  h1, h2 { @apply font-headline uppercase tracking-tight; }
+  h3, h4 { @apply font-subheadline uppercase tracking-tight; }
 }
