@@ -224,34 +224,39 @@ export default function BFTWynnumLanding() {
 
   // Netlify Function -> Wingman CRM
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setError("");
+  e.preventDefault();
+  setSubmitting(true);
+  setError("");
 
-    try {
-      const payload = { name, email, phone, message };
+  try {
+    const payload = { name, email, phone, message };
 
-      const res = await fetch("/.netlify/functions/wingman-lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+    const res = await fetch("/.netlify/functions/wingman-lead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-      if (!res.ok) throw new Error(`Submit responded ${res.status}`);
-      setSubmitted(true);
-      setName("");
-      setEmail("");
-      setPhone("");
-      setMessage("");
-    } catch (err) {
-      console.error(err);
-      setError(
-        "Sorry, something went wrong. Please try again or contact us directly."
-      );
-    } finally {
-      setSubmitting(false);
+    // Read response text first (API might not always return JSON on errors)
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = { raw: text }; }
+
+    if (!res.ok || data?.ok !== true) {
+      throw new Error(data?.detail || data?.error || text || `HTTP ${res.status}`);
     }
-  };
+
+    setSubmitted(true);
+    setName("");
+    setEmail("");
+    setPhone("");
+    setMessage("");
+  } catch (err) {
+    setError(`Sorry, something went wrong: ${String(err.message || err)}`);
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900">
