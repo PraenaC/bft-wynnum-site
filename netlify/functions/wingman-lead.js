@@ -1,100 +1,69 @@
 // netlify/functions/wingman-lead.js
+// Sends an enquiry to Wingman CRM using env vars:
+//  - WINGMAN_ENDPOINT  e.g. https://app.wingmancrm.com/v2/location/<LOCATION_ID>/leads
+//  - WINGMAN_API_KEY   your pit-... token
+
 export async function handler(event) {
-  // CORS preflight
-  if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 204,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-      },
-      body: "",
-    };
-  }
-
-  if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({ ok: false, error: "Method Not Allowed" }),
-    };
-  }
-
   try {
+    if (event.httpMethod !== "POST") {
+      return { statusCode: 405, body: "Method Not Allowed" };
+    }
+
     const { name, email, phone, message } = JSON.parse(event.body || "{}");
 
     if (!name || !email || !phone) {
-      return {
-        statusCode: 400,
-        headers: { "Access-Control-Allow-Origin": "*" },
-        body: JSON.stringify({ ok: false, error: "Missing required fields." }),
-      };
+      return { statusCode: 400, body: "Missing required fields" };
     }
 
-    // ---- Configure via Netlify env vars ----
-    // WINGMAN_ENDPOINT: the full URL your Wingman rep gave you (webhook / API)
-    // WINGMAN_API_KEY: optional; if your endpoint needs Bearer auth
-    const ENDPOINT = process.env.WINGMAN_ENDPOINT;
-    const API_KEY  = process.env.WINGMAN_API_KEY || "";
+    const endpoint = process.env.WINGMAN_ENDPOINT;
+    const token = process.env.WINGMAN_API_KEY;
 
-    // DRY-RUN / TEST MODE (lets the page succeed so you can verify end-to-end)
-    if (!ENDPOINT) {
-      console.log("[wingman-lead] TEST MODE — no WINGMAN_ENDPOINT set", {
-        name,
-        email,
-        phone,
-        message,
-      });
-      return {
-        statusCode: 200,
-        headers: { "Access-Control-Allow-Origin": "*" },
-        body: JSON.stringify({ ok: true, testMode: true }),
-      };
+    if (!endpoint || !token) {
+      return { statusCode: 500, body: "Server missing Wingman env vars" };
     }
 
-    // Build a payload Wingman can accept (adjust keys if your endpoint differs)
+    // Map to Wingman’s expected field names (number = phone)
     const payload = {
       name,
       email,
-      number: phone,         // <— many CRMs use "number" not "phone"
-      message,
-      source: "BFT Wynnum Landing",
+      number: phone,
+      notes: message || "",
+      source: "BFT Wynnum website",
     };
 
-    const headers = { "Content-Type": "application/json" };
-    if (API_KEY) headers.Authorization = `Bearer ${API_KEY}`;
-
-    const res = await fetch(ENDPOINT, {
+    // First try Bearer auth…
+    let res = await fetch(endpoint, {
       method: "POST",
-      headers,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify(payload),
     });
 
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      console.error("[wingman-lead] Wingman error", res.status, text);
-      return {
-        statusCode: 502,
-        headers: { "Access-Control-Allow-Origin": "*" },
-        body: JSON.stringify({
-          ok: false,
-          error: `Wingman responded ${res.status}`,
-        }),
-      };
+    // …some Wingman tenants expect X-Access-Token instead
+    if (res.status === 401 || res.status === 403) {
+      res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Access-Token": token,
+        },
+        body: JSON.stringify(payload),
+      });
     }
 
-    return {
-      statusCode: 200,
-      headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({ ok: true }),
-    };
+    const text = await res.text();
+
+    if (!res.ok) {
+      // Surface Wingman’s message in Netlify logs to help debugging
+      console.error("[wingman-lead] error", res.status, text);
+      return { statusCode: res.status, body: text || "Wingman error" };
+    }
+
+    return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   } catch (err) {
-    console.error("[wingman-lead] Unhandled error", err);
-    return {
-      statusCode: 500,
-      headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({ ok: false, error: "Server error" }),
-    };
+    console.error("[wingman-lead] exception", err);
+    return { statusCode: 500, body: "Server error" };
   }
 }
