@@ -2,6 +2,7 @@
 // Sends an enquiry to Wingman CRM using env vars:
 // - WINGMAN_ENDPOINT  e.g. https://api.wingmancrm.com/v2/location/<LOCATION_ID>/opportunities
 // - WINGMAN_API_KEY   your pit-... token
+console.log("[wingman-lead] endpoint:", process.env.WINGMAN_ENDPOINT);
 
 export async function handler(event) {
   try {
