@@ -1,62 +1,113 @@
-// netlify/functions/wingman-lead.js
-// Uses env vars:
-// - WINGMAN_ENDPOINT: https://app.wingmancrm.com/v2/location/<LOCATION_ID>/leads
-// - WINGMAN_API_KEY : pit-... token from Private Integrations
+// Sends a lead to Wingman CRM (Private Integrations).
+// Required env vars:
+//   WINGMAN_ENDPOINT = https://app.wingmancrm.com/v2/location/<LOCATION_ID>/integrations/<INTEGRATION_ID>/leads
+//   WINGMAN_API_KEY  = pit-xxxxxxxx (current token)
+
+const ok = (headers, data) => ({
+  statusCode: 200,
+  headers,
+  body: JSON.stringify(data ?? { ok: true }),
+});
+
+const fail = (headers, status, msg, extra = {}) => ({
+  statusCode: status,
+  headers,
+  body: JSON.stringify({ error: msg, ...extra }),
+});
+
+const corsHeaders = (event) => {
+  const origin = event.headers?.origin || event.headers?.Origin || "*";
+  // Reflect whitelisted origins, otherwise fall back to "*"
+  const allow =
+    /localhost(:\d+)?$|netlify\.app$/i.test(origin) ? origin : "*";
+
+  return {
+    "Access-Control-Allow-Origin": allow,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Vary": "Origin",
+  };
+};
 
 export async function handler(event) {
+  const headers = corsHeaders(event);
+
+  // Preflight
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 204, headers, body: "" };
+  }
+
+  if (event.httpMethod !== "POST") {
+    return fail(headers, 405, "Method Not Allowed");
+  }
+
+  // Parse and validate input
+  let body;
   try {
-    if (event.httpMethod !== "POST") {
-      return respond(405, { ok: false, error: "Method Not Allowed" });
-    }
+    body = JSON.parse(event.body || "{}");
+  } catch {
+    return fail(headers, 400, "Invalid JSON body");
+  }
 
-    const { name, email, phone, message } = JSON.parse(event.body || "{}");
-    if (!name || !email || !phone) {
-      return respond(400, { ok: false, error: "Missing required fields" });
-    }
+  const name = String(body.name || "").trim();
+  const email = String(body.email || "").trim();
+  const phone = String(body.phone || body.number || "").trim();
+  const message = String(body.message || "").trim();
 
-    const endpoint = process.env.WINGMAN_ENDPOINT;
-    const apiKey   = process.env.WINGMAN_API_KEY;
-    if (!endpoint || !apiKey) {
-      return respond(500, { ok: false, error: "Server missing Wingman env vars" });
-    }
+  if (!name || !email || !phone) {
+    return fail(headers, 400, "Missing required fields", {
+      required: ["name", "email", "phone"],
+    });
+  }
 
-    // Build multipart/form-data body
-    const form = new FormData();
-    form.append("name", name);
-    form.append("email", email);
-    form.append("number", phone);          // Wingman expects "number" for phone
-    form.append("notes", message || "");
-    form.append("source", "BFT Wynnum website");
+  // Env vars
+  const endpoint = process.env.WINGMAN_ENDPOINT;
+  const apiKey = process.env.WINGMAN_API_KEY;
 
-    const res = await fetch(endpoint, {
+  if (!endpoint || !apiKey) {
+    return fail(headers, 500, "Server misconfiguration", {
+      missing: {
+        WINGMAN_ENDPOINT: !endpoint,
+        WINGMAN_API_KEY: !apiKey,
+      },
+    });
+  }
+
+  // Map to Wingman’s expected fields
+  const payload = {
+    name,
+    email,
+    number: phone,            // Wingman expects "number" for phone
+    notes: message || "",
+    source: "BFT Wynnum website kickstart form",
+  };
+
+  // Call Wingman (use Bearer auth; host must be app.wingmancrm.com)
+  let res, text;
+  try {
+    res = await fetch(endpoint, {
       method: "POST",
       headers: {
-        // DO NOT set Content-Type manually (lets fetch add boundary)
-        "X-api-key": apiKey,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
       },
-      body: form,
+      body: JSON.stringify(payload),
     });
-
-    const text = await res.text();
-    if (!res.ok) {
-      console.error("[wingman-lead] Wingman error", res.status, text);
-      return respond(res.status, { ok: false, error: `Wingman ${res.status}`, detail: text });
-    }
-
-    return respond(200, { ok: true });
+    text = await res.text(); // Wingman may return JSON or empty; text keeps logs readable
   } catch (err) {
-    console.error("[wingman-lead] Function error", err);
-    return respond(500, { ok: false, error: "Function error", detail: err.message });
+    return fail(headers, 502, "Network error contacting Wingman", {
+      details: err.message,
+    });
   }
-}
 
-function respond(statusCode, body) {
-  return {
-    statusCode,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
-    body: JSON.stringify(body),
-  };
+  if (!res.ok) {
+    // Forward Wingman response to logs/clients for quick debugging
+    return fail(headers, res.status, "Wingman request failed", {
+      wingmanStatus: res.status,
+      wingmanBody: text,
+    });
+  }
+
+  // Success
+  return ok(headers, { ok: true });
 }
