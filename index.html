@@ -10,6 +10,13 @@
   </head>
   <body class="bg-white">
     <div id="root"></div>
+<!-- Pre-declare Netlify form so it shows up in the dashboard -->
+<form name="kickstart" netlify netlify-honeypot="bot-field" hidden>
+  <input type="text" name="name" />
+  <input type="email" name="email" />
+  <input type="tel" name="phone" />
+  <textarea name="message"></textarea>
+</form>
 
     <!-- Netlify Forms fallback target (hidden) -->
     <form name="kickstart" data-netlify="true" netlify-honeypot="bot-field" hidden>
