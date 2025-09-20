@@ -2,7 +2,7 @@ import { useState } from "react";
 
 /* ============================================================================
    BFT Wynnum Landing
-   - Hero (autoplay video + caption)
+   - Hero (autoplay video + caption) + NEW "Getting Started" copy above H1
    - Why / What's included
    - Coaches (head-safe images)
    - Timetable (childminding badges, no Sunday)
@@ -143,7 +143,16 @@ export default function BFTWynnumLanding() {
       <Section id="kickstart-hero" className="pt-10">
         <div className="grid md:grid-cols-2 gap-10 items-start">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight">28 DAY KICKSTART</h1>
+            {/* NEW: Getting Started block BEFORE the H1 */}
+            <p className="text-xs uppercase tracking-widest text-cyan-700 font-semibold">Getting Started</p>
+            <p className="mt-2 text-slate-600 max-w-prose">
+              For the best results, value and experience, we highly recommend you start with our
+              <span className="font-semibold"> 28 Day Intro Program</span>. It&apos;s designed to set you up
+              for success right from the start, take away any potential gym nerves, overwhelm and build new
+              habits that set you up for long-lasting success.
+            </p>
+
+            <h1 className="mt-5 text-4xl md:text-5xl font-black tracking-tight">28 DAY KICKSTART</h1>
             <p className="mt-4 text-slate-600 max-w-prose">
               Ready to level up your training? Build habits, learn technique, and see measurable progress
               with coach support.
@@ -435,5 +444,3 @@ function KickstartForm() {
     </Card>
   );
 }
-
-
