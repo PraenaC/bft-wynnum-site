@@ -4,7 +4,7 @@ import { useState } from "react";
    BFT Wynnum Landing
    - Hero (autoplay video + caption) + "Getting Started" above H1
    - Why / What's included
-   - Coaches (head-safe images + one-liner bios)
+   - Coaches (head-safe images + one-liner bios)  <-- Ben nudged up on all screens
    - Timetable (childminding badges, no Sunday)
    - Kickstart form (Netlify Forms)
    - Group shot (no caption)
@@ -42,36 +42,42 @@ const CHILD_MINDING = new Set([
 ]);
 
 /* ----------------------------- Coaches + one-liners -------------------------- */
+/* NOTE: Ben’s image has a custom objectPosition to keep his head in frame on all screens */
 const COACHES = [
   {
     name: "Ben",
     role: "Owner & Coach",
     img: "/images/Ben.png",
     bio: "Pushes you until you drop and then tells you an awful Dad joke to make you smile.",
+    focus: "50% 15%", // <— nudge up (affects mobile & desktop)
   },
   {
     name: "Pren",
     role: "Owner & Coach",
     img: "/images/Pren.png",
     bio: "Our boss girl who brings the energy and keeps the vibe inclusive.",
+    focus: "50% 20%",
   },
   {
     name: "Christian",
     role: "Head Coach",
     img: "/images/Christian.png",
     bio: "Technique-focused and results-driven. Leads the floor with precision.",
+    focus: "50% 20%",
   },
   {
     name: "Josh",
     role: "Coach",
     img: "/images/Josh.png",
     bio: "A balance of technical excellence and simplicity so you perform well safely.",
+    focus: "50% 20%",
   },
   {
     name: "Tyneale",
     role: "Coach",
     img: "/images/Tyneale.png",
     bio: "Supportive and motivating — helping members nail form and confidence.",
+    focus: "50% 20%",
   },
 ];
 
@@ -259,8 +265,9 @@ export default function BFTWynnumLanding() {
               <img
                 src={c.img}
                 alt={c.name}
-                className="w-full h-56 object-cover object-top"
+                className="w-full h-64 md:h-56 object-cover" // more headroom on mobile
                 loading="lazy"
+                style={c.focus ? { objectPosition: c.focus } : undefined}
                 onError={(e) => (e.currentTarget.src = c.img.replace(".png", ".jpg"))}
               />
               <div className="p-4">
