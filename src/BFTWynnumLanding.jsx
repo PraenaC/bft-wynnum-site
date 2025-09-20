@@ -2,9 +2,9 @@ import { useState } from "react";
 
 /* ============================================================================
    BFT Wynnum Landing
-   - Hero (autoplay video + caption) + NEW "Getting Started" copy above H1
+   - Hero (autoplay video + caption) + "Getting Started" above H1
    - Why / What's included
-   - Coaches (head-safe images)
+   - Coaches (head-safe images + one-liner bios)
    - Timetable (childminding badges, no Sunday)
    - Kickstart form (Netlify Forms)
    - Group shot (no caption)
@@ -41,12 +41,38 @@ const CHILD_MINDING = new Set([
   "Saturday 9:15am",
 ]);
 
+/* ----------------------------- Coaches + one-liners -------------------------- */
 const COACHES = [
-  { name: "Ben", role: "Owner & Coach", img: "/images/Ben.png" },
-  { name: "Pren", role: "Owner & Coach", img: "/images/Pren.png" },
-  { name: "Christian", role: "Head Coach", img: "/images/Christian.png" },
-  { name: "Josh", role: "Coach", img: "/images/Josh.png" },
-  { name: "Tyneale", role: "Coach", img: "/images/Tyneale.png" },
+  {
+    name: "Ben",
+    role: "Owner & Coach",
+    img: "/images/Ben.png",
+    bio: "Pushes you until you drop and then tells you an awful Dad joke to make you smile.",
+  },
+  {
+    name: "Pren",
+    role: "Owner & Coach",
+    img: "/images/Pren.png",
+    bio: "Our boss girl who brings the energy and keeps the vibe inclusive.",
+  },
+  {
+    name: "Christian",
+    role: "Head Coach",
+    img: "/images/Christian.png",
+    bio: "Technique-focused and results-driven. Leads the floor with precision.",
+  },
+  {
+    name: "Josh",
+    role: "Coach",
+    img: "/images/Josh.png",
+    bio: "A balance of technical excellence and simplicity so you perform well safely.",
+  },
+  {
+    name: "Tyneale",
+    role: "Coach",
+    img: "/images/Tyneale.png",
+    bio: "Supportive and motivating — helping members nail form and confidence.",
+  },
 ];
 
 /* --------------------------------- Helpers --------------------------------- */
@@ -143,7 +169,7 @@ export default function BFTWynnumLanding() {
       <Section id="kickstart-hero" className="pt-10">
         <div className="grid md:grid-cols-2 gap-10 items-start">
           <div>
-            {/* NEW: Getting Started block BEFORE the H1 */}
+            {/* Getting Started block BEFORE the H1 */}
             <p className="text-xs uppercase tracking-widest text-cyan-700 font-semibold">Getting Started</p>
             <p className="mt-2 text-slate-600 max-w-prose">
               For the best results, value and experience, we highly recommend you start with our
@@ -222,7 +248,7 @@ export default function BFTWynnumLanding() {
         </div>
       </Section>
 
-      {/* COACHES */}
+      {/* COACHES (with one-liner bios) */}
       <Section id="coaches">
         <h2 className="text-3xl font-extrabold">Meet Your Coaches</h2>
         <p className="mt-2 text-slate-600">Technique-obsessed, friendly, and here for your progress.</p>
@@ -240,6 +266,7 @@ export default function BFTWynnumLanding() {
               <div className="p-4">
                 <p className="font-semibold">{c.name}</p>
                 <p className="text-sm text-slate-600">{c.role}</p>
+                <p className="text-sm text-slate-600 mt-2">{c.bio}</p>
               </div>
             </Card>
           ))}
