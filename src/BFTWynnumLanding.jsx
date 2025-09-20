@@ -2,10 +2,10 @@ import { useState } from "react";
 
 /* ============================================================================
    BFT Wynnum Landing
-   - Hero (video)
+   - Hero (autoplay video + caption)
    - Why / What's included
    - Coaches (head-safe images)
-   - Timetable (with childminding badges)
+   - Timetable (childminding badges, no Sunday)
    - Kickstart form (Netlify Forms)
    - Group shot (no caption)
    - FAQs
@@ -18,18 +18,17 @@ const FEATURES = [
   { title: "Access to all program types", desc: "Strength, Cardio & Hybrid — learn what you love." },
 ];
 
-// --- Timetable (now includes 9:15am M–F, 4:00pm Mon & Wed, 8:00am + 9:15am Sat) ---
+/* ---------------------- Timetable (exact times you gave) --------------------- */
 const SCHEDULE = {
-  Monday:    ["5:00am", "6:00am", "9:15am", "4:00pm", "5:15pm", "6:15pm"],
-  Tuesday:   ["5:00am", "6:00am", "9:15am",               "5:15pm", "6:15pm"],
-  Wednesday: ["5:00am", "6:00am", "9:15am", "4:00pm", "5:15pm", "6:15pm"],
-  Thursday:  ["5:00am", "6:00am", "9:15am",               "5:15pm", "6:15pm"],
-  Friday:    ["5:00am", "6:00am", "9:15am"],
-  Saturday:  ["6:30am", "7:30am", "8:00am", "9:15am"],
-  Sunday:    [],
+  Monday:    ["5:00am", "6:00am", "7:00am", "9:15am", "4:00pm", "5:00pm", "6:00pm"],
+  Tuesday:   ["5:00am", "6:00am", "7:00am", "9:15am",            "5:00pm", "6:00pm"],
+  Wednesday: ["5:00am", "6:00am", "7:00am", "9:15am", "4:00pm", "5:00pm", "6:00pm"],
+  Thursday:  ["5:00am", "6:00am", "7:00am", "9:15am",            "5:00pm", "6:00pm"],
+  Friday:    ["5:00am", "6:00am", "7:00am", "9:15am", "4:00pm", "5:00pm"],
+  Saturday:  ["5:30am", "6:45am", "8:00am", "9:15am"],
 };
 
-// --- Sessions with childminding (must match strings in SCHEDULE) ---
+/* -------- Sessions with childminding (must match strings in SCHEDULE) ------- */
 const CHILD_MINDING = new Set([
   "Monday 9:15am",
   "Tuesday 9:15am",
@@ -50,6 +49,7 @@ const COACHES = [
   { name: "Tyneale", role: "Coach", img: "/images/Tyneale.png" },
 ];
 
+/* --------------------------------- Helpers --------------------------------- */
 function Section({ id, className = "", children }) {
   return (
     <section id={id} className={`py-16 ${className}`}>
@@ -66,7 +66,7 @@ function Card({ className = "", children }) {
   );
 }
 
-function Pill({ children }) {
+function Pill() {
   return (
     <span className="ml-2 inline-flex items-center rounded-full border border-emerald-600 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
       👶 Childminding
@@ -74,8 +74,8 @@ function Pill({ children }) {
   );
 }
 
-export default function BFTWynnumLanding() {
-  /* ------------------------ Netlify Forms (no Wingman yet) ------------------------ */
+/* --------------------------- Netlify Forms handler -------------------------- */
+function useNetlifyForm() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -113,7 +113,13 @@ export default function BFTWynnumLanding() {
     }
   }
 
-  /* ----------------------------------- UI ----------------------------------- */
+  return { form, setForm, submitting, submitted, error, handleSubmit };
+}
+
+/* --------------------------------- Page ------------------------------------ */
+export default function BFTWynnumLanding() {
+  const form = useNetlifyForm();
+
   return (
     <div className="bg-white text-slate-800">
       {/* Top nav */}
@@ -133,7 +139,7 @@ export default function BFTWynnumLanding() {
         </div>
       </header>
 
-      {/* HERO */}
+      {/* HERO (video right – autoplay + caption) */}
       <Section id="kickstart-hero" className="pt-10">
         <div className="grid md:grid-cols-2 gap-10 items-start">
           <div>
@@ -165,14 +171,22 @@ export default function BFTWynnumLanding() {
             </div>
           </div>
 
-          {/* Video card */}
-          <Card className="overflow-hidden">
-            <video
-              src="/IntroVideo.mp4"
-              controls
-              className="w-full h-[340px] md:h-[420px] object-cover bg-black"
-            />
-          </Card>
+          <figure>
+            <Card className="overflow-hidden">
+              <video
+                src="/IntroVideo.mp4"
+                muted
+                autoPlay
+                loop
+                playsInline
+                controls
+                className="w-full h-[340px] md:h-[420px] object-cover bg-black"
+              />
+            </Card>
+            <figcaption className="mt-2 text-sm text-slate-600 text-center">
+              What to expect at BFT
+            </figcaption>
+          </figure>
         </div>
       </Section>
 
@@ -186,15 +200,15 @@ export default function BFTWynnumLanding() {
         <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card className="p-6">
             <p className="text-lg font-semibold">Progressive Strength</p>
-            <p className="text-sm text-slate-600 mt-1">Build a strong foundation with coach-led technique and structured progressions.</p>
+            <p className="text-sm text-slate-600 mt-1">Coach-led technique and structured progressions.</p>
           </Card>
           <Card className="p-6">
             <p className="text-lg font-semibold">Smarter Cardio</p>
-            <p className="text-sm text-slate-600 mt-1">Train in the right heart-rate zones to burn calories and boost endurance efficiently.</p>
+            <p className="text-sm text-slate-600 mt-1">Train in the right HR zones to get more from every minute.</p>
           </Card>
           <Card className="p-6">
             <p className="text-lg font-semibold">50-Minute Sessions</p>
-            <p className="text-sm text-slate-600 mt-1">High-energy, time-efficient classes that fit busy schedules.</p>
+            <p className="text-sm text-slate-600 mt-1">High-energy, time-efficient classes for busy schedules.</p>
           </Card>
         </div>
       </Section>
@@ -223,10 +237,17 @@ export default function BFTWynnumLanding() {
         </div>
       </Section>
 
-      {/* TIMETABLE */}
+      {/* TIMETABLE (no Sunday) */}
       <Section id="timetable" className="bg-slate-50">
-        <h2 className="text-3xl font-extrabold">Timetable</h2>
-        <p className="mt-2 text-slate-600">Childminding available on selected sessions (look for the badge).</p>
+        <div className="flex items-center gap-3">
+          <h2 className="text-3xl font-extrabold">Class Timetable</h2>
+          <span className="text-xs rounded-full bg-emerald-100 text-emerald-700 px-2 py-1">
+            👶 Childminding on selected sessions
+          </span>
+        </div>
+        <p className="mt-2 text-slate-600">
+          Childminding at <strong>9:15am Mon–Fri</strong>, <strong>4:00pm Mon & Wed</strong>, and <strong>8:00am & 9:15am Saturday</strong>.
+        </p>
 
         <div className="mt-6 overflow-x-auto">
           <table className="min-w-full text-left text-sm">
@@ -238,7 +259,6 @@ export default function BFTWynnumLanding() {
               </tr>
             </thead>
             <tbody>
-              {/* render max rows equal to longest day */}
               {Array.from(
                 { length: Math.max(...Object.values(SCHEDULE).map((v) => v.length)) },
                 (_, row) => (
@@ -251,7 +271,7 @@ export default function BFTWynnumLanding() {
                           {time && (
                             <span className="inline-flex items-center">
                               {time}
-                              {cm && <Pill>Childminding</Pill>}
+                              {cm && <Pill />}
                             </span>
                           )}
                         </td>
@@ -275,77 +295,7 @@ export default function BFTWynnumLanding() {
             </p>
           </div>
 
-          <Card className="p-4">
-            {/* Netlify Forms: name must match hidden 'form-name' below */}
-            <form
-              name="kickstart"
-              method="POST"
-              data-netlify="true"
-              netlify-honeypot="bot-field"
-              onSubmit={handleSubmit}
-            >
-              {/* Netlify form wires */}
-              <input type="hidden" name="form-name" value="kickstart" />
-              <input type="hidden" name="subject" value="BFT Wynnum – Kickstart enquiry" />
-              <p className="hidden">
-                <label>
-                  Don’t fill this out: <input name="bot-field" onChange={() => {}} />
-                </label>
-              </p>
-
-              <div className="grid gap-3">
-                <input
-                  className="h-11 rounded-lg border px-3"
-                  type="text"
-                  name="name"
-                  placeholder="Full name"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  required
-                />
-                <input
-                  className="h-11 rounded-lg border px-3"
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  required
-                />
-                <input
-                  className="h-11 rounded-lg border px-3"
-                  type="tel"
-                  name="phone"
-                  placeholder="Phone"
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  required
-                />
-                <textarea
-                  className="min-h-[110px] rounded-lg border px-3 py-2"
-                  name="message"
-                  placeholder="Any questions or goals?"
-                  value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
-                />
-                {error && <p className="text-sm text-rose-600">{error}</p>}
-
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="mt-1 inline-flex h-11 items-center justify-center rounded-lg bg-slate-900 px-4 font-medium text-white hover:bg-slate-800 disabled:opacity-60"
-                >
-                  {submitting ? "Sending…" : "Start Kickstart"}
-                </button>
-
-                {submitted && (
-                  <p className="text-sm text-emerald-700" aria-live="polite">
-                    Thanks! We’ve received your details.
-                  </p>
-                )}
-              </div>
-            </form>
-          </Card>
+          <KickstartForm />
         </div>
       </Section>
 
@@ -353,7 +303,7 @@ export default function BFTWynnumLanding() {
       <Section>
         <Card className="overflow-hidden">
           <img
-            src="/images/GroupShot.jpg?v=4"
+            src="/images/GroupShot.jpg?v=5"
             alt="BFT Wynnum members training in-studio"
             className="w-full h-[520px] object-cover object-center"
             loading="lazy"
@@ -369,8 +319,7 @@ export default function BFTWynnumLanding() {
           <Card className="p-5">
             <p className="font-semibold">Do I need to be fit to start?</p>
             <p className="mt-2 text-sm text-slate-600">
-              Nope! We coach you at your level with options for every exercise. You’ll get stronger and fitter
-              each week.
+              Nope! We coach you at your level with options for every exercise. You’ll get stronger and fitter each week.
             </p>
           </Card>
           <Card className="p-5">
@@ -380,7 +329,7 @@ export default function BFTWynnumLanding() {
           <Card className="p-5">
             <p className="font-semibold">Is there childminding?</p>
             <p className="mt-2 text-sm text-slate-600">
-              Yes — look for sessions with the 👶 badge (9:15am Mon–Fri, 4:00pm Mon & Wed, 8:00am & 9:15am Sat).
+              Yes — 9:15am Mon–Fri, 4:00pm Mon & Wed, and 8:00am & 9:15am Saturday (see the 👶 badge).
             </p>
           </Card>
           <Card className="p-5">
@@ -407,4 +356,84 @@ export default function BFTWynnumLanding() {
     </div>
   );
 }
+
+/* --------------------------- Subcomponents below --------------------------- */
+
+function KickstartForm() {
+  const { form, setForm, submitting, submitted, error, handleSubmit } = useNetlifyForm();
+  return (
+    <Card className="p-4">
+      {/* Netlify Forms: name must match hidden 'form-name' in the POST body */}
+      <form
+        name="kickstart"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        onSubmit={handleSubmit}
+      >
+        {/* Netlify wires (bot-field is optional but helps) */}
+        <input type="hidden" name="form-name" value="kickstart" />
+        <input type="hidden" name="subject" value="BFT Wynnum – Kickstart enquiry" />
+        <p className="hidden">
+          <label>
+            Don’t fill this out: <input name="bot-field" onChange={() => {}} />
+          </label>
+        </p>
+
+        <div className="grid gap-3">
+          <input
+            className="h-11 rounded-lg border px-3"
+            type="text"
+            name="name"
+            placeholder="Full name"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            required
+          />
+          <input
+            className="h-11 rounded-lg border px-3"
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            required
+          />
+          <input
+            className="h-11 rounded-lg border px-3"
+            type="tel"
+            name="phone"
+            placeholder="Phone"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            required
+          />
+          <textarea
+            className="min-h-[110px] rounded-lg border px-3 py-2"
+            name="message"
+            placeholder="Any questions or goals?"
+            value={form.message}
+            onChange={(e) => setForm({ ...form, message: e.target.value })}
+          />
+          {error && <p className="text-sm text-rose-600">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="mt-1 inline-flex h-11 items-center justify-center rounded-lg bg-slate-900 px-4 font-medium text-white hover:bg-slate-800 disabled:opacity-60"
+          >
+            {submitting ? "Sending…" : "Start Kickstart"}
+          </button>
+
+          {submitted && (
+            <p className="text-sm text-emerald-700" aria-live="polite">
+              Thanks! We’ve received your details.
+            </p>
+          )}
+        </div>
+      </form>
+    </Card>
+  );
+}
+
 
