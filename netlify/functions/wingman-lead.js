@@ -1,5 +1,5 @@
 // netlify/functions/wingman-lead.js
-// Creates a Lead in Wingman CRM (Private Integrations)
+// Creates a record in Wingman CRM Private Integrations, trying common object buckets.
 
 export async function handler(event) {
   try {
@@ -12,19 +12,19 @@ export async function handler(event) {
       return { statusCode: 400, body: "Missing required fields" };
     }
 
-    const API_KEY = (process.env.WINGMAN_API_KEY || "").trim();
-    const LOCATION = (process.env.WINGMAN_LOCATION_ID || "").trim();
-    const INTEGRATION = (process.env.WINGMAN_INTEGRATION_ID || "").trim();
+    const API_KEY   = (process.env.WINGMAN_API_KEY || "").trim();
+    const LOCATION  = (process.env.WINGMAN_LOCATION_ID || "").trim();
+    const INTEG_ID  = (process.env.WINGMAN_INTEGRATION_ID || "").trim();
 
-    if (!API_KEY || !LOCATION || !INTEGRATION) {
+    if (!API_KEY || !LOCATION || !INTEG_ID) {
       return { statusCode: 500, body: "Missing Wingman env vars" };
     }
 
-    const endpoint =
+    const base =
       `https://app.wingmancrm.com/v2/location/${encodeURIComponent(LOCATION)}` +
-      `/integrations/${encodeURIComponent(INTEGRATION)}/leads`;
+      `/integrations/${encodeURIComponent(INTEG_ID)}`;
 
-    // Wingman’s Private Integrations /leads endpoint expects multipart/form-data
+    // Wingman expects multipart/form-data on Private Integrations object POSTs
     const form = new FormData();
     form.set("name", name);
     form.set("email", email);
@@ -32,19 +32,29 @@ export async function handler(event) {
     if (message) form.set("notes", message);
     form.set("source", "BFT Wynnum website");
 
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: { "x-api-key": API_KEY }, // let fetch set the multipart boundary
-      body: form,
-    });
-
-    const text = await res.text();
-    if (!res.ok) {
-      console.error("[wingman-lead] Wingman error", res.status, text);
+    // Try buckets in order; stop on first 2xx
+    const buckets = ["leads", "opportunities", "contacts"];
+    let lastText = "";
+    for (const b of buckets) {
+      const url = `${base}/${b}`;
+      const res = await fetch(url, { method: "POST", headers: { "x-api-key": API_KEY }, body: form });
+      const text = await res.text();
+      if (res.ok) {
+        return { statusCode: 200, body: JSON.stringify({ ok: true, bucket: b }) };
+      }
+      lastText = text;
+      // If the bucket literally doesn't exist, try the next one
+      if (res.status === 404 && /NoSuchBucket/i.test(text)) {
+        continue;
+      }
+      // For other errors (401/403/400), bubble up now so we see the real cause
+      console.error("[wingman-lead]", b, res.status, text);
       return { statusCode: res.status, body: text };
     }
 
-    return { statusCode: 200, body: JSON.stringify({ ok: true }) };
+    // We tried all known buckets and all said NoSuchBucket
+    console.error("[wingman-lead] All buckets missing:", lastText);
+    return { statusCode: 404, body: "No matching Wingman bucket (leads/opportunities/contacts) found." };
   } catch (err) {
     console.error("[wingman-lead] Function error", err);
     return { statusCode: 500, body: "Function error" };
