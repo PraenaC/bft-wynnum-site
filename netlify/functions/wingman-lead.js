@@ -1,67 +1,48 @@
 // netlify/functions/wingman-lead.js
-// Posts a lead to Wingman CRM using env vars:
+// Sends an enquiry to Wingman CRM using env vars:
 // - WINGMAN_ENDPOINT  e.g. https://api.wingmancrm.com/v2/location/<LOCATION_ID>/leads
-// - WINGMAN_API_KEY   your "pit-..." access token from Private Integrations
+// - WINGMAN_API_KEY   your pit-... token
 
 export async function handler(event) {
+  if (event.httpMethod !== "POST") {
+    return { statusCode: 405, body: "Method Not Allowed" };
+  }
+
   try {
-    if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Method Not Allowed" };
-    }
-
-    // Parse the incoming JSON body
-    let payloadIn;
-    try {
-      payloadIn = JSON.parse(event.body || "{}");
-    } catch {
-      return { statusCode: 400, body: "Bad Request: invalid JSON" };
-    }
-
-    const { name, email, phone, message } = payloadIn;
+    const { name, email, phone, message } = JSON.parse(event.body || "{}");
     if (!name || !email || !phone) {
       return { statusCode: 400, body: "Missing required fields" };
     }
 
     const endpoint = process.env.WINGMAN_ENDPOINT;
     const apiKey   = process.env.WINGMAN_API_KEY;
+
     if (!endpoint || !apiKey) {
-      return { statusCode: 500, body: "Server misconfigured (env vars)" };
+      return { statusCode: 500, body: "Server missing Wingman env vars" };
     }
 
-    // Map to Wingman’s expected field names (number = phone)
-    const wingmanBody = {
-      name,
-      email,
-      number: phone,
-      notes: message || "",
-      source: "BFT Wynnum website",
-    };
+    // Build multipart/form-data (Node 18+ has FormData globally)
+    const fd = new FormData();
+    fd.set("name",   name);
+    fd.set("email",  email);
+    fd.set("number", phone);          // Wingman expects 'number' for phone
+    if (message) fd.set("notes", message);
+    fd.set("source", "BFT Wynnum website");
 
-    // Call Wingman – Private Integrations use the `x-api-key` header
     const res = await fetch(endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-      },
-      body: JSON.stringify(wingmanBody),
+      headers: { "x-api-key": apiKey }, // don't set Content-Type; fetch will add boundary
+      body: fd,
     });
 
     const text = await res.text();
-    // If Wingman didn’t like it, bubble the error (helps debugging in Netlify logs)
     if (!res.ok) {
-      console.error("[wingman-lead] Wingman error", res.status, text);
-      return { statusCode: res.status, body: text || "Wingman error" };
+      // Bubble Wingman’s error into Netlify logs for debugging
+      return { statusCode: res.status, body: `Wingman error ${res.status}: ${text}` };
     }
 
-    // All good
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ok: true }),
-    };
+    return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   } catch (err) {
-    console.error("[wingman-lead] Function crash:", err);
-    return { statusCode: 500, body: "Internal Server Error" };
+    return { statusCode: 500, body: `Function error: ${err.message}` };
   }
 }
