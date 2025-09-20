@@ -1,5 +1,6 @@
 // netlify/functions/wingman-lead.js
-// Creates a record in Wingman CRM Private Integrations, trying common object buckets.
+// Create a record in Wingman via Private Integrations.
+// Tries base paths + buckets until one works.
 
 export async function handler(event) {
   try {
@@ -12,19 +13,22 @@ export async function handler(event) {
       return { statusCode: 400, body: "Missing required fields" };
     }
 
-    const API_KEY   = (process.env.WINGMAN_API_KEY || "").trim();
-    const LOCATION  = (process.env.WINGMAN_LOCATION_ID || "").trim();
-    const INTEG_ID  = (process.env.WINGMAN_INTEGRATION_ID || "").trim();
+    const API_KEY  = (process.env.WINGMAN_API_KEY || "").trim();
+    const LOC_ID   = (process.env.WINGMAN_LOCATION_ID || "").trim();
+    const INTEG_ID = (process.env.WINGMAN_INTEGRATION_ID || "").trim();
 
-    if (!API_KEY || !LOCATION || !INTEG_ID) {
+    if (!API_KEY || !LOC_ID || !INTEG_ID) {
       return { statusCode: 500, body: "Missing Wingman env vars" };
     }
 
-    const base =
-      `https://app.wingmancrm.com/v2/location/${encodeURIComponent(LOCATION)}` +
-      `/integrations/${encodeURIComponent(INTEG_ID)}`;
+    // Candidate base paths (some accounts use "private-integrations", others "integrations")
+    const bases = [
+      `https://app.wingmancrm.com/v2/location/${encodeURIComponent(LOC_ID)}/private-integrations/${encodeURIComponent(INTEG_ID)}`,
+      `https://app.wingmancrm.com/v2/location/${encodeURIComponent(LOC_ID)}/integrations/${encodeURIComponent(INTEG_ID)}`
+    ];
+    const buckets = ["leads", "opportunities", "contacts"];
 
-    // Wingman expects multipart/form-data on Private Integrations object POSTs
+    // Wingman PI expects multipart/form-data
     const form = new FormData();
     form.set("name", name);
     form.set("email", email);
@@ -32,29 +36,29 @@ export async function handler(event) {
     if (message) form.set("notes", message);
     form.set("source", "BFT Wynnum website");
 
-    // Try buckets in order; stop on first 2xx
-    const buckets = ["leads", "opportunities", "contacts"];
-    let lastText = "";
-    for (const b of buckets) {
-      const url = `${base}/${b}`;
-      const res = await fetch(url, { method: "POST", headers: { "x-api-key": API_KEY }, body: form });
-      const text = await res.text();
-      if (res.ok) {
-        return { statusCode: 200, body: JSON.stringify({ ok: true, bucket: b }) };
+    let lastStatus = 0, lastText = "";
+    for (const base of bases) {
+      for (const b of buckets) {
+        const url = `${base}/${b}`;
+        const res = await fetch(url, { method: "POST", headers: { "x-api-key": API_KEY }, body: form });
+        const text = await res.text();
+        if (res.ok) {
+          return { statusCode: 200, body: JSON.stringify({ ok: true, path: `${base}/${b}` }) };
+        }
+        lastStatus = res.status;
+        lastText = text;
+
+        // If the error says the bucket doesn't exist, keep trying others.
+        if (res.status === 404 && /NoSuchBucket/i.test(text)) continue;
+
+        // For 400/401/403 etc., bubble up now so we see the real cause.
+        console.error("[wingman-lead] POST", url, res.status, text);
+        return { statusCode: res.status, body: text };
       }
-      lastText = text;
-      // If the bucket literally doesn't exist, try the next one
-      if (res.status === 404 && /NoSuchBucket/i.test(text)) {
-        continue;
-      }
-      // For other errors (401/403/400), bubble up now so we see the real cause
-      console.error("[wingman-lead]", b, res.status, text);
-      return { statusCode: res.status, body: text };
     }
 
-    // We tried all known buckets and all said NoSuchBucket
-    console.error("[wingman-lead] All buckets missing:", lastText);
-    return { statusCode: 404, body: "No matching Wingman bucket (leads/opportunities/contacts) found." };
+    console.error("[wingman-lead] No base/bucket matched:", lastStatus, lastText);
+    return { statusCode: 404, body: "No matching Wingman endpoint (base/bucket) found." };
   } catch (err) {
     console.error("[wingman-lead] Function error", err);
     return { statusCode: 500, body: "Function error" };
