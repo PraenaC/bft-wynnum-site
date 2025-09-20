@@ -45,32 +45,38 @@ export default function BFTWynnumLanding() {
 
   // Submit to Netlify Function
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setError("");
-    setSubmitted(false);
+  e.preventDefault();
+  setSubmitting(true);
+  setError("");
+  setSubmitted(false);
 
-    try {
-      const res = await fetch("/.netlify/functions/wingman-lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, phone, message }),
-      });
-      const text = await res.text();
-      if (!res.ok) {
-        console.error("Wingman error:", res.status, text);
-        setError("Sorry, something went wrong. Please try again or contact us directly.");
-      } else {
-        setSubmitted(true);
-        setName(""); setEmail(""); setPhone(""); setMessage("");
-      }
-    } catch (err) {
-      console.error(err);
-      setError("Sorry, something went wrong. Please try again or contact us directly.");
-    } finally {
-      setSubmitting(false);
+  try {
+    const res = await fetch("/.netlify/functions/wingman-lead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, phone, message }),
+    });
+
+    const raw = await res.text();
+    if (!res.ok) {
+      let msg = raw;
+      // If the function sent JSON {error: "..."} use that. Otherwise strip XML tags.
+      try {
+        const j = JSON.parse(raw);
+        msg = j?.error ?? raw;
+      } catch {}
+      msg = String(msg).replace(/<[^>]+>/g, " ").trim(); // strip XML/HTML
+      setError(msg || "Sorry, something went wrong.");
+    } else {
+      setSubmitted(true);
+      setName(""); setEmail(""); setPhone(""); setMessage("");
     }
-  };
+  } catch (err) {
+    setError(err.message || "Sorry, something went wrong.");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <main className="min-h-screen bg-white text-slate-900">
