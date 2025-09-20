@@ -8,20 +8,20 @@ import {
   MapPin,
   Phone,
   Mail,
-  Star,
-  ArrowRight,
   ChevronDown,
+  ArrowRight,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-/* -----------------------------
+/* --------------------------------
    DATA
------------------------------ */
+--------------------------------- */
 
-// Coaches (uses public/images/*.png you uploaded)
+// Coaches (local images you uploaded in /public/images)
 const COACHES = [
   {
     name: "Ben",
@@ -58,85 +58,45 @@ const COACHES = [
   },
 ];
 
-// Timetable
 const TIMETABLE = [
-  {
-    group: "Monday",
-    sessions: [
-      { time: "5:00a" },
-      { time: "6:00a" },
-      { time: "7:00a" },
-      { time: "9:15a", child: true },
-      { time: "4:00p", child: true },
-      { time: "5:00p" },
-      { time: "6:00p" },
-    ],
-  },
-  {
-    group: "Tuesday",
-    sessions: [
-      { time: "5:00a" },
-      { time: "6:00a" },
-      { time: "7:00a" },
-      { time: "9:15a", child: true },
-      { time: "4:00p" },
-      { time: "5:00p" },
-      { time: "6:00p" },
-    ],
-  },
-  {
-    group: "Wednesday",
-    sessions: [
-      { time: "5:00a" },
-      { time: "6:00a" },
-      { time: "7:00a" },
-      { time: "9:15a", child: true },
-      { time: "4:00p", child: true },
-      { time: "5:00p" },
-      { time: "6:00p" },
-    ],
-  },
-  {
-    group: "Thursday",
-    sessions: [
-      { time: "5:00a" },
-      { time: "6:00a" },
-      { time: "7:00a" },
-      { time: "9:15a", child: true },
-      { time: "4:00p" },
-      { time: "5:00p" },
-      { time: "6:00p" },
-    ],
-  },
-  {
-    group: "Friday",
-    sessions: [
-      { time: "5:00a" },
-      { time: "6:00a" },
-      { time: "7:00a" },
-      { time: "9:15a", child: true },
-      { time: "4:00p" },
-      { time: "5:00p" },
-    ],
-  },
-  {
-    group: "Saturday",
-    sessions: [
-      { time: "5:30a" },
-      { time: "6:45a" },
-      { time: "8:00a", child: true },
-      { time: "9:15a", child: true },
-    ],
-  },
+  { group: "Monday", sessions: [
+    { time: "5:00a" }, { time: "6:00a" }, { time: "7:00a" },
+    { time: "9:15a", child: true }, { time: "4:00p", child: true },
+    { time: "5:00p" }, { time: "6:00p" },
+  ]},
+  { group: "Tuesday", sessions: [
+    { time: "5:00a" }, { time: "6:00a" }, { time: "7:00a" },
+    { time: "9:15a", child: true }, { time: "4:00p" },
+    { time: "5:00p" }, { time: "6:00p" },
+  ]},
+  { group: "Wednesday", sessions: [
+    { time: "5:00a" }, { time: "6:00a" }, { time: "7:00a" },
+    { time: "9:15a", child: true }, { time: "4:00p", child: true },
+    { time: "5:00p" }, { time: "6:00p" },
+  ]},
+  { group: "Thursday", sessions: [
+    { time: "5:00a" }, { time: "6:00a" }, { time: "7:00a" },
+    { time: "9:15a", child: true }, { time: "4:00p" },
+    { time: "5:00p" }, { time: "6:00p" },
+  ]},
+  { group: "Friday", sessions: [
+    { time: "5:00a" }, { time: "6:00a" }, { time: "7:00a" },
+    { time: "9:15a", child: true }, { time: "4:00p" },
+    { time: "5:00p" },
+  ]},
+  { group: "Saturday", sessions: [
+    { time: "5:30a" }, { time: "6:45a" },
+    { time: "8:00a", child: true }, { time: "9:15a", child: true },
+  ]},
 ];
 
-/* -----------------------------
+/* --------------------------------
    SMALL COMPONENTS
------------------------------ */
+--------------------------------- */
 
 const Session = ({ time, child }) => (
   <p className="flex items-center gap-2 text-slate-700">
-    {time}{" "}
+    {time}
     {child && (
       <span className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
         {"👶"} Child-minding
@@ -152,28 +112,11 @@ const Feature = ({ icon: Icon, title, text }) => (
         <span className="p-2 rounded-xl bg-slate-100">
           <Icon className="w-5 h-5" aria-hidden />
         </span>
-        <CardTitle className="text-lg font-subheadline uppercase tracking-tight">
-          {title}
-        </CardTitle>
+        <CardTitle className="text-lg font-semibold">{title}</CardTitle>
       </div>
     </CardHeader>
     <CardContent className="text-slate-600 text-sm leading-relaxed">
       {text}
-    </CardContent>
-  </Card>
-);
-
-const Testimonial = ({ quote, name, subtitle, stars = 5 }) => (
-  <Card className="border-slate-200 shadow-sm rounded-2xl">
-    <CardContent className="pt-6">
-      <div className="flex gap-1 mb-3" aria-label={`${stars} out of 5 stars`}>
-        {Array.from({ length: stars }).map((_, i) => (
-          <Star key={i} className="w-4 h-4 fill-current" />
-        ))}
-      </div>
-      <p className="text-slate-700 italic">“{quote}”</p>
-      <p className="mt-3 font-medium">{name}</p>
-      <p className="text-slate-500 text-sm">{subtitle}</p>
     </CardContent>
   </Card>
 );
@@ -196,12 +139,12 @@ const FaqItem = ({ q, a }) => {
   );
 };
 
-/* -----------------------------
-   MAIN COMPONENT
------------------------------ */
+/* --------------------------------
+   MAIN
+--------------------------------- */
 
 export default function BFTWynnumLanding() {
-  // Contact form state
+  // Contact / Kickstart state
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -210,53 +153,53 @@ export default function BFTWynnumLanding() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // Load Elfsight script once for Google Reviews
+  // Load Elfsight script (Google Reviews) once
   useEffect(() => {
-    const id = "elfsight-platform-script";
-    if (!document.getElementById(id)) {
-      const s = document.createElement("script");
-      s.id = id;
-      s.src = "https://elfsightcdn.com/platform.js";
-      s.async = true;
-      document.body.appendChild(s);
-    }
+    if (document.getElementById("elfsight-platform-script")) return;
+    const s = document.createElement("script");
+    s.id = "elfsight-platform-script";
+    s.src = "https://elfsightcdn.com/platform.js";
+    s.async = true;
+    document.body.appendChild(s);
   }, []);
 
-  // Netlify Function -> Wingman CRM
+  // Submit to Netlify Function (multipart/form-data)
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setSubmitting(true);
-  setError("");
+    e.preventDefault();
+    setSubmitting(true);
+    setError("");
 
-  try {
-    const payload = { name, email, phone, message };
+    try {
+      const fd = new FormData();
+      fd.append("name", name);
+      fd.append("email", email);
+      fd.append("phone", phone);
+      fd.append("message", message);
 
-    const res = await fetch("/.netlify/functions/wingman-lead", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      const res = await fetch("/.netlify/functions/wingman-lead", {
+        method: "POST",
+        body: fd,
+      });
 
-    // Read response text first (API might not always return JSON on errors)
-    const text = await res.text();
-    let data;
-    try { data = JSON.parse(text); } catch { data = { raw: text }; }
+      const text = await res.text();
+      if (!res.ok) {
+        throw new Error(text || `Submit responded ${res.status}`);
+      }
 
-    if (!res.ok || data?.ok !== true) {
-      throw new Error(data?.detail || data?.error || text || `HTTP ${res.status}`);
+      setSubmitted(true);
+      setName("");
+      setEmail("");
+      setPhone("");
+      setMessage("");
+    } catch (err) {
+      console.error(err);
+      setError(
+        "Sorry, something went wrong. Please try again or contact us directly."
+      );
+    } finally {
+      setSubmitting(false);
     }
-
-    setSubmitted(true);
-    setName("");
-    setEmail("");
-    setPhone("");
-    setMessage("");
-  } catch (err) {
-    setError(`Sorry, something went wrong: ${String(err.message || err)}`);
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900">
@@ -264,35 +207,21 @@ export default function BFTWynnumLanding() {
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <a href="#home" className="flex items-center gap-2 font-headline uppercase">
+            <a href="#home" className="flex items-center gap-2 font-extrabold tracking-tight">
               <Dumbbell className="w-5 h-5" />
               <span>BFT Wynnum</span>
             </a>
             <nav className="hidden md:flex items-center gap-6 text-sm">
-              <a href="#kickstart" className="hover:text-slate-900 text-slate-600">
-                Kickstart
-              </a>
-              <a href="#why" className="hover:text-slate-900 text-slate-600">
-                Why BFT
-              </a>
-              <a href="#team" className="hover:text-slate-900 text-slate-600">
-                Coaches
-              </a>
-              <a href="#timetable" className="hover:text-slate-900 text-slate-600">
-                Timetable
-              </a>
-              <a href="#reviews" className="hover:text-slate-900 text-slate-600">
-                Reviews
-              </a>
-              <a href="#faqs" className="hover:text-slate-900 text-slate-600">
-                FAQs
-              </a>
-              <a href="#contact" className="hover:text-slate-900 text-slate-600">
-                Contact
-              </a>
+              <a href="#kickstart" className="hover:text-slate-900 text-slate-600">Kickstart</a>
+              <a href="#why" className="hover:text-slate-900 text-slate-600">Why BFT</a>
+              <a href="#team" className="hover:text-slate-900 text-slate-600">Coaches</a>
+              <a href="#timetable" className="hover:text-slate-900 text-slate-600">Timetable</a>
+              <a href="#reviews" className="hover:text-slate-900 text-slate-600">Reviews</a>
+              <a href="#faqs" className="hover:text-slate-900 text-slate-600">FAQs</a>
+              <a href="#contact" className="hover:text-slate-900 text-slate-600">Contact</a>
             </nav>
             <div className="hidden md:block">
-              <Button asChild className="rounded-2xl bg-bft-teal hover:bg-bft-teal/90">
+              <Button asChild className="rounded-2xl">
                 <a href="#kickstart">Start 28 Day Kickstart</a>
               </Button>
             </div>
@@ -300,95 +229,22 @@ export default function BFTWynnumLanding() {
         </div>
       </header>
 
-      {/* HERO */}
-      <section id="home" className="relative">
-        <div className="absolute inset-0 -z-10">
-          <img
-            src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2000&auto=format&fit=crop"
-            alt="Group training at a fitness studio"
-            className="w-full h-full object-cover opacity-20"
-            loading="eager"
-          />
-        </div>
-        <div className="max-w-6xl mx-auto px-4 py-20 md:py-28 grid md:grid-cols-2 gap-10 items-center">
+      {/* KICKSTART (Hero) */}
+      <section id="kickstart" className="py-16" aria-label="28 Day Kickstart">
+        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-10 items-start">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl md:text-5xl leading-tight">
-              Stronger. Fitter. Together.
+            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
+              28 Day Kickstart
             </h1>
             <p className="mt-4 text-lg text-slate-700">
-              Join our <span className="font-semibold">28 Day Kickstart</span> — science-backed group
-              training blending strength, cardio and progressive programming.
+              Ready to level up your training? Build habits, learn technique, and
+              see measurable progress with coach support.
             </p>
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              <Button asChild className="rounded-2xl bg-bft-teal hover:bg-bft-teal/90">
-                <a href="#kickstart" className="flex items-center gap-2">
-                  Start 28 Day Kickstart <ArrowRight className="w-4 h-4" />
-                </a>
-              </Button>
-              <Button asChild variant="outline" className="rounded-2xl">
-                <a href="#timetable">View Timetable</a>
-              </Button>
-            </div>
-            <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-slate-600">
-              <div className="flex items-center gap-2">
-                <Heart className="w-4 h-4" /> Heart-rate tech
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" /> 50-min sessions
-              </div>
-              <div className="flex items-center gap-2">
-                <Dumbbell className="w-4 h-4" /> Progressive programming
-              </div>
-            </div>
-          </motion.div>
 
-          {/* Quick visual + blurb */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <Card className="overflow-hidden rounded-2xl border-slate-200">
-              {/* Offer image */}
-              <img
-                src="/images/GroupShot.jpg?v=4"
-                alt="BFT Wynnum members training in-studio"
-                className="h-56 w-full object-cover object-top"
-                loading="lazy"
-                onError={(e) => {
-                  // fallback to PNG if JPG isn't present
-                  const el = e.currentTarget;
-                  if (!el.dataset.triedPng) {
-                    el.dataset.triedPng = "1";
-                    el.src = "/images/GroupShot.png?v=2";
-                  }
-                }}
-              />
-              <CardContent className="p-6">
-                <p className="text-sm text-slate-600">
-                  “The best training community in Wynnum. Coaches actually coach and the
-                  programming keeps me progressing.”
-                </p>
-                <p className="mt-3 text-sm font-medium">— Member review</p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* KICKSTART (form) */}
-      <section id="kickstart" className="py-16">
-        <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-3 gap-6 items-stretch">
-          <div className="md:col-span-2">
-            <h2 className="text-3xl">28 Day Kickstart</h2>
-            <p className="mt-3 text-slate-600">
-              <span className="font-medium">Ready to level up your training?</span> Build habits,
-              learn technique, and see measurable progress with coach support.
-            </p>
             <ul className="mt-6 grid sm:grid-cols-2 gap-3 text-slate-700">
               {[
                 "4 curated weeks of progressive training",
@@ -402,72 +258,103 @@ export default function BFTWynnumLanding() {
                 </li>
               ))}
             </ul>
+
             <div className="mt-6 flex gap-3">
-              <Button asChild className="rounded-2xl bg-bft-teal hover:bg-bft-teal/90">
-                <a href="#kickstart">Get Started</a>
+              <Button asChild className="rounded-2xl">
+                <a href="#kickstart" className="flex items-center gap-2">
+                  Get Started <ArrowRight className="w-4 h-4" />
+                </a>
               </Button>
               <Button asChild variant="outline" className="rounded-2xl">
                 <a href="#faqs">What’s included</a>
               </Button>
             </div>
-          </div>
+          </motion.div>
 
-          <Card className="rounded-2xl border-slate-200">
-            <CardHeader>
-              <CardTitle className="text-2xl font-headline uppercase tracking-tight">
-                Kickstart Enquiry
-              </CardTitle>
-              <p className="text-slate-600">
-                We’ll be in touch to lock in your first session and personalise your plan.
-              </p>
-            </CardHeader>
-            <CardContent>
-              {submitted ? (
-                <div className="text-center py-8">
-                  <h3 className="text-xl font-subheadline uppercase tracking-tight">You’re in! 🎉</h3>
-                  <p className="text-slate-600 mt-2">Thanks for your interest. We’ll contact you shortly.</p>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-3">
-                  <Input
-                    required
-                    placeholder="Full name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                  <Input
-                    required
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  <Input
-                    required
-                    type="tel"
-                    placeholder="Mobile"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
-                  <Textarea
-                    placeholder="Any questions or goals?"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                  />
-                  {error && <p className="text-sm text-red-600">{error}</p>}
-                  <Button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full rounded-2xl bg-bft-teal hover:bg-bft-teal/90"
-                  >
-                    {submitting ? "Sending..." : "Start Kickstart"}
-                  </Button>
-                  <p className="text-xs text-slate-500">
-                    By submitting, you agree to be contacted about your enquiry. No spam.
-                  </p>
-                </form>
-              )}
-            </CardContent>
+          {/* Enquiry Form */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.05 }}
+          >
+            <Card className="rounded-2xl shadow-xl border-slate-200">
+              <CardHeader>
+                <CardTitle className="text-2xl">Kickstart Enquiry</CardTitle>
+                <p className="text-slate-600">
+                  We’ll be in touch to lock in your first session and personalise your plan.
+                </p>
+              </CardHeader>
+              <CardContent>
+                {submitted ? (
+                  <div className="text-center py-8">
+                    <h3 className="text-xl font-semibold">You're in! 🎉</h3>
+                    <p className="text-slate-600 mt-2">
+                      Thanks for your interest. We'll contact you shortly.
+                    </p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-3">
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <Input
+                        required
+                        placeholder="Full name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                      <Input
+                        required
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                    <Input
+                      required
+                      type="tel"
+                      placeholder="Mobile"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                    <Textarea
+                      placeholder="Any questions or goals?"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                    />
+                    {error && <p className="text-sm text-red-600">{error}</p>}
+                    <Button
+                      type="submit"
+                      disabled={submitting}
+                      className="w-full rounded-2xl"
+                    >
+                      {submitting ? "Sending..." : "Start Kickstart"}
+                    </Button>
+                    <p className="text-xs text-slate-500">
+                      By submitting, you agree to be contacted about your enquiry. No spam.
+                    </p>
+                  </form>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+
+        {/* Group shot – image only, no caption */}
+        <div className="max-w-6xl mx-auto px-4 mt-8">
+          <Card className="overflow-hidden rounded-2xl border-slate-200">
+            <img
+              src="/images/GroupShot.jpg?v=5"
+              alt="BFT Wynnum members training in-studio"
+              className="w-full object-cover object-center"
+              style={{ aspectRatio: "16 / 9" }}
+              loading="lazy"
+              onError={(e) => {
+                if (!e.currentTarget.dataset.triedPng) {
+                  e.currentTarget.dataset.triedPng = "1";
+                  e.currentTarget.src = "/images/GroupShot.png?v=5";
+                }
+              }}
+            />
           </Card>
         </div>
       </section>
@@ -475,11 +362,11 @@ export default function BFTWynnumLanding() {
       {/* WHY */}
       <section id="why" className="py-16 bg-white/60">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl">Why Train at BFT Wynnum</h2>
+          <h2 className="text-3xl font-bold">Why Train at BFT Wynnum</h2>
           <p className="mt-3 text-slate-600 max-w-3xl">
-            We keep it real: great coaching, progressive programming, and an inclusive vibe where
-            you’ll actually want to show up. Our 28 Day Kickstart gets you moving safely, building
-            confidence, and slotting training into your week without overwhelm.
+            We keep it real: great coaching, progressive programming, and an inclusive vibe
+            where you’ll actually want to show up. Our 28 Day Kickstart gets you moving safely,
+            building confidence, and slotting training into your week without overwhelm.
           </p>
           <div className="mt-8 grid md:grid-cols-3 gap-6">
             <Feature
@@ -504,27 +391,24 @@ export default function BFTWynnumLanding() {
       {/* COACHES */}
       <section id="team" className="py-16">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl">Meet Your Coaches</h2>
-          <p className="mt-2 text-slate-600">Technique-obsessed, friendly, and here for your progress.</p>
+          <h2 className="text-3xl font-bold">Meet Your Coaches</h2>
+          <p className="mt-2 text-slate-600">
+            Technique-obsessed, friendly, and here for your progress.
+          </p>
           <div className="mt-8 grid sm:grid-cols-2 md:grid-cols-3 gap-6">
             {COACHES.map((c) => (
               <Card key={c.name} className="overflow-hidden rounded-2xl border-slate-200">
-                {/* Keep heads in frame */}
                 <img
                   src={c.img}
                   alt={c.name}
-                  className="h-48 w-full object-cover object-top md:h-52"
+                  className="w-full h-56 object-cover object-top md:h-60"
                   loading="lazy"
                 />
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-subheadline uppercase tracking-tight">
-                    {c.name}
-                  </CardTitle>
+                  <CardTitle className="text-lg">{c.name}</CardTitle>
                   <p className="text-slate-500 text-sm">{c.role}</p>
                 </CardHeader>
-                <CardContent className="text-slate-600 text-sm">
-                  {c.bio}
-                </CardContent>
+                <CardContent className="text-slate-600 text-sm">{c.bio}</CardContent>
               </Card>
             ))}
           </div>
@@ -536,7 +420,7 @@ export default function BFTWynnumLanding() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex items-end justify-between gap-4 flex-wrap">
             <div>
-              <h2 className="text-3xl">Timetable</h2>
+              <h2 className="text-3xl font-bold">Timetable</h2>
               <p className="mt-2 text-slate-600">Book via the app after you enquire.</p>
             </div>
             <Button asChild className="rounded-2xl">
@@ -547,9 +431,7 @@ export default function BFTWynnumLanding() {
             {TIMETABLE.map((col) => (
               <Card key={col.group} className="rounded-2xl border-slate-200">
                 <CardHeader>
-                  <CardTitle className="font-subheadline uppercase tracking-tight">
-                    {col.group}
-                  </CardTitle>
+                  <CardTitle>{col.group}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-slate-600 text-sm space-y-2">
                   {col.sessions.map((s, idx) => (
@@ -560,8 +442,7 @@ export default function BFTWynnumLanding() {
             ))}
           </div>
           <p className="mt-4 text-xs text-slate-500">
-            👶 Child-minding available at 9:15am Mon–Fri, 4:00pm Mon & Wed, and 8:00am & 9:15am
-            Saturday.
+            👶 Child-minding available at 9:15am Mon–Fri, 4:00pm Mon & Wed, and 8:00am & 9:15am Saturday.
           </p>
         </div>
       </section>
@@ -569,11 +450,14 @@ export default function BFTWynnumLanding() {
       {/* REVIEWS (Elfsight) */}
       <section id="reviews" className="py-16 bg-white/60">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl">Member Reviews</h2>
-          <p className="mt-2 text-slate-600">Straight from Google — real feedback from our community.</p>
+          <h2 className="text-3xl font-bold">Reviews</h2>
+          <p className="mt-2 text-slate-600">What our members are saying.</p>
           <div className="mt-6">
-            {/* Replace the class below with your Elfsight app class if it differs */}
-            <div className="elfsight-app-3bde9cac-d178-4084-bdf5-1fa57984f813" data-elfsight-app-lazy></div>
+            {/* Replace the class below with your Elfsight widget id */}
+            <div
+              className="elfsight-app-3bde9cac-d178-4084-bdf5-1fa57984f813"
+              data-elfsight-app-lazy
+            />
           </div>
         </div>
       </section>
@@ -581,7 +465,7 @@ export default function BFTWynnumLanding() {
       {/* FAQS */}
       <section id="faqs" className="py-16">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl">FAQs</h2>
+          <h2 className="text-3xl font-bold">FAQs</h2>
           <div className="mt-4">
             <FaqItem
               q="Do I need to be fit to start?"
@@ -603,7 +487,7 @@ export default function BFTWynnumLanding() {
       <section id="contact" className="py-16">
         <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-8 items-start">
           <div>
-            <h2 className="text-3xl">Find Us</h2>
+            <h2 className="text-3xl font-bold">Find Us</h2>
             <div className="mt-4 space-y-2 text-slate-700">
               <p className="flex items-center gap-2">
                 <MapPin className="w-4 h-4" />{" "}
@@ -622,7 +506,7 @@ export default function BFTWynnumLanding() {
                 </a>
               </p>
               <div className="pt-2">
-                <Button asChild variant="outline" className="rounded-2xl">
+                <Button asChild className="rounded-2xl">
                   <a
                     href="https://maps.google.com/?q=66%20Edith%20St%20Wynnum%204178"
                     target="_blank"
@@ -634,9 +518,10 @@ export default function BFTWynnumLanding() {
               </div>
             </div>
           </div>
-          {/* Reuse the same form for general questions */}
+
+          {/* Simple contact form using the same handler */}
           <div>
-            <h2 className="text-3xl">Ask a Question</h2>
+            <h2 className="text-3xl font-bold">Ask a Question</h2>
             <p className="mt-2 text-slate-600">
               Tell us your goals and we’ll recommend the best sessions to start with.
             </p>
@@ -644,9 +529,7 @@ export default function BFTWynnumLanding() {
               <CardContent className="pt-6">
                 {submitted ? (
                   <div className="text-center py-8">
-                    <h3 className="text-xl font-subheadline uppercase tracking-tight">
-                      Thanks! We’ll be in touch.
-                    </h3>
+                    <h3 className="text-xl font-semibold">Thanks! We’ll be in touch.</h3>
                     <p className="text-slate-600 mt-2">Keep an eye on your inbox.</p>
                   </div>
                 ) : (
@@ -683,7 +566,7 @@ export default function BFTWynnumLanding() {
                     <Button
                       type="submit"
                       disabled={submitting}
-                      className="w-full rounded-2xl bg-bft-teal hover:bg-bft-teal/90"
+                      className="w-full rounded-2xl"
                     >
                       {submitting ? "Sending..." : "Send Message"}
                     </Button>
@@ -705,18 +588,10 @@ export default function BFTWynnumLanding() {
             © {new Date().getFullYear()} BFT Wynnum. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-sm">
-            <a href="#contact" className="underline">
-              Contact
-            </a>
-            <a href="#faqs" className="underline">
-              FAQs
-            </a>
-            <a href="#" className="underline">
-              Terms
-            </a>
-            <a href="#" className="underline">
-              Privacy
-            </a>
+            <a href="#contact" className="underline">Contact</a>
+            <a href="#faqs" className="underline">FAQs</a>
+            <a href="#" className="underline">Terms</a>
+            <a href="#" className="underline">Privacy</a>
           </div>
         </div>
       </footer>
@@ -738,7 +613,7 @@ export default function BFTWynnumLanding() {
               addressCountry: "AU",
             },
             telephone: "+61413496289",
-            url: "https://REPLACE-YOUR-DOMAIN",
+            url: "https://bftwynnum.netlify.app",
             priceRange: "$$",
           }),
         }}
@@ -746,4 +621,3 @@ export default function BFTWynnumLanding() {
     </div>
   );
 }
-
