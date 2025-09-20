@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 
-/* Dumbbell logo (inline SVG so it never goes missing) */
+/* Dumbbell logo (inline SVG so it can’t disappear) */
 const Dumbbell = (props) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
     <path d="M3 9h2v6H3V9zm16 0h2v6h-2V9zM7 7h2v10H7V7zm8 0h2v10h-2V7zM11 9h2v6h-2V9z" />
   </svg>
 );
 
-/* Tiny check icon */
+/* Check icon */
 const Check = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
     <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z" />
@@ -16,11 +16,11 @@ const Check = () => (
 
 /* Coaches */
 const COACHES = [
-  { name: "Ben",        role: "Owner & Coach", bio: "Pushes you until you drop and then tells you an awful Dad joke to make you smile.", img: "/images/Ben.png" },
-  { name: "Pren",       role: "Owner & Coach", bio: "Our boss girl who brings the energy and keeps the vibe inclusive.",                 img: "/images/Pren.png" },
-  { name: "Christian",  role: "Head Coach",    bio: "Technique-focused and results-driven. Leads the floor with precision.",           img: "/images/Christian.png" },
-  { name: "Tyneale",    role: "Coach",         bio: "Supportive and motivating — helping members nail form and confidence.",           img: "/images/Tyneale.png" },
-  { name: "Josh",       role: "Coach",         bio: "Balanced technical excellence and simplicity so you push safely and enjoyably.",  img: "/images/Josh.png" },
+  { name: "Ben",       role: "Owner & Coach", bio: "Pushes you until you drop and then tells you an awful Dad joke to make you smile.", img: "/images/Ben.png" },
+  { name: "Pren",      role: "Owner & Coach", bio: "Our boss girl who brings the energy and keeps the vibe inclusive.",                 img: "/images/Pren.png" },
+  { name: "Christian", role: "Head Coach",    bio: "Technique-focused and results-driven. Leads the floor with precision.",            img: "/images/Christian.png" },
+  { name: "Tyneale",   role: "Coach",         bio: "Supportive and motivating — helping members nail form and confidence.",            img: "/images/Tyneale.png" },
+  { name: "Josh",      role: "Coach",         bio: "Balanced technical excellence and simplicity so you push safely and enjoyably.",   img: "/images/Josh.png" },
 ];
 
 export default function BFTWynnumLanding() {
@@ -30,56 +30,64 @@ export default function BFTWynnumLanding() {
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
+  const [status, setStatus] = useState("");    // success / error message
 
-  // Load Elfsight once (Google Reviews)
+  // Load Elfsight (Google Reviews)
   useEffect(() => {
-    if (document.getElementById("elfsight-platform-script")) return;
-    const s = document.createElement("script");
-    s.id = "elfsight-platform-script";
-    s.src = "https://elfsightcdn.com/platform.js";
-    s.async = true;
-    document.body.appendChild(s);
+    if (!document.getElementById("elfsight-platform-script")) {
+      const s = document.createElement("script");
+      s.id = "elfsight-platform-script";
+      s.src = "https://elfsightcdn.com/platform.js";
+      s.async = true;
+      document.body.appendChild(s);
+    }
   }, []);
 
-  // Submit to Netlify Function
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  setSubmitting(true);
-  setError("");
-  setSubmitted(false);
+  // Handle submit: try Wingman function, else fall back to Netlify Forms
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setSubmitting(true);
+    setStatus("");
 
-  try {
-    const res = await fetch("/.netlify/functions/wingman-lead", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, phone, message }),
-    });
+    try {
+      // 1) Try Netlify Function → Wingman
+      const res = await fetch("/.netlify/functions/wingman-lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, phone, message }),
+      });
 
-    const raw = await res.text();
-    if (!res.ok) {
-      let msg = raw;
-      // If the function sent JSON {error: "..."} use that. Otherwise strip XML tags.
-      try {
-        const j = JSON.parse(raw);
-        msg = j?.error ?? raw;
-      } catch {}
-      msg = String(msg).replace(/<[^>]+>/g, " ").trim(); // strip XML/HTML
-      setError(msg || "Sorry, something went wrong.");
-    } else {
-      setSubmitted(true);
+      if (res.ok) {
+        setStatus("Thanks! We’ll be in touch shortly.");
+        setName(""); setEmail(""); setPhone(""); setMessage("");
+        setSubmitting(false);
+        return;
+      }
+
+      // 2) Fallback: Netlify Forms capture (guaranteed save)
+      await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          "form-name": "kickstart",
+          name,
+          email,
+          phone,
+          message,
+        }).toString(),
+      });
+
+      setStatus("Thanks! We’ve received your details.");
       setName(""); setEmail(""); setPhone(""); setMessage("");
+    } catch (err) {
+      setStatus("Sorry, something went wrong. Please try again or contact us directly.");
+    } finally {
+      setSubmitting(false);
     }
-  } catch (err) {
-    setError(err.message || "Sorry, something went wrong.");
-  } finally {
-    setSubmitting(false);
   }
-};
 
   return (
-    <main className="min-h-screen bg-white text-slate-900">
+    <main className="min-h-screen bg-white text-slate-900" id="home">
       {/* Header with logo */}
       <header className="sticky top-0 z-20 border-b bg-white/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
@@ -97,7 +105,7 @@ export default function BFTWynnumLanding() {
       <section id="kickstart" className="py-16">
         <div className="mx-auto max-w-6xl px-4">
           <div className="grid items-start gap-10 md:grid-cols-2">
-            {/* Left column */}
+            {/* Left: copy */}
             <div>
               <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl">28 Day Kickstart</h1>
               <p className="mt-4 text-slate-700">
@@ -128,14 +136,14 @@ export default function BFTWynnumLanding() {
               </div>
             </div>
 
-            {/* Form card */}
+            {/* Right: form card */}
             <div className="rounded-2xl border border-slate-200 p-6 shadow-sm">
               <h2 className="text-lg font-bold tracking-tight">Kickstart Enquiry</h2>
               <p className="mt-1 text-sm text-slate-600">
                 We’ll be in touch to lock in your first session and personalise your plan.
               </p>
 
-              <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+              <form onSubmit={handleSubmit} className="mt-4 space-y-3" name="kickstart-visible">
                 <input
                   type="text" placeholder="Full name" className="w-full rounded-md border px-3 py-2"
                   value={name} onChange={(e) => setName(e.target.value)} required
@@ -153,27 +161,28 @@ export default function BFTWynnumLanding() {
                   className="w-full rounded-md border px-3 py-2"
                   value={message} onChange={(e) => setMessage(e.target.value)}
                 />
-                {error && <p className="text-sm text-red-600">{error}</p>}
-                {submitted && !error && <p className="text-sm text-green-700">Thanks! We’ll be in touch shortly.</p>}
                 <button type="submit" disabled={submitting}
                   className="w-full rounded-md bg-slate-900 px-4 py-2 text-white disabled:opacity-60">
                   {submitting ? "Submitting..." : "Start Kickstart"}
                 </button>
+                {status && (
+                  <p className="text-sm text-slate-700" aria-live="polite">{status}</p>
+                )}
               </form>
             </div>
           </div>
 
-          {/* Group shot image only */}
+          {/* Group shot image only (no caption) */}
           <div className="mt-12 overflow-hidden rounded-2xl border border-slate-200">
             <img
-              src="/images/GroupShot.jpg?v=5"
+              src="/images/GroupShot.jpg?v=7"
               alt="BFT Wynnum members training in-studio"
               className="w-full"
               loading="lazy"
               onError={(e) => {
                 if (!e.currentTarget.dataset.triedPng) {
                   e.currentTarget.dataset.triedPng = "1";
-                  e.currentTarget.src = "/images/GroupShot.png?v=5";
+                  e.currentTarget.src = "/images/GroupShot.png?v=7";
                 }
               }}
             />
@@ -189,7 +198,7 @@ export default function BFTWynnumLanding() {
             We keep it real: great coaching, progressive programming, and an inclusive vibe where you’ll actually want to show up.
           </p>
 
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
+        <div className="mt-8 grid gap-6 md:grid-cols-3">
             {[
               { title: "Progressive Strength", text: "Build a strong foundation with coach-led technique and structured progressions." },
               { title: "Smarter Cardio",       text: "Train in the right heart-rate zones to burn calories and boost endurance efficiently." },
@@ -204,7 +213,7 @@ export default function BFTWynnumLanding() {
         </div>
       </section>
 
-      {/* ✅ Moved up: What's included (before Coaches) */}
+      {/* ✅ “What’s included” BEFORE Coaches */}
       <section id="included" className="py-16">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="text-3xl font-bold">What’s included</h2>
@@ -222,6 +231,7 @@ export default function BFTWynnumLanding() {
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="text-3xl font-bold">Meet Your Coaches</h2>
           <p className="mt-2 text-slate-700">Technique-obsessed, friendly, and here for your progress.</p>
+
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {COACHES.map((c) => (
               <article key={c.name} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -242,6 +252,7 @@ export default function BFTWynnumLanding() {
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="text-3xl font-bold">Reviews</h2>
           <p className="mt-2 text-slate-700">Real feedback from our members.</p>
+
           <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="elfsight-app-3bde9cac-d178-4084-bdf5-1fa57984f813" data-elfsight-app-lazy />
           </div>
