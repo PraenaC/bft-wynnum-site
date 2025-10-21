@@ -4,7 +4,7 @@ import { useState } from "react";
    BFT Wynnum Landing
    - Hero (autoplay video + caption) + "Getting Started" above H1
    - Why / What's included
-   - Coaches (Ben, Pren, Josh, Tyneale) — 2 columns on desktop; Ben focus nudged up
+   - Coaches (Ben, Pren, Josh, Tyneale) — 2 columns on desktop; Ben focus nudged up more
    - Timetable (childminding badges, no Sunday)
    - Kickstart form (Netlify Forms)
    - Group shot (no caption)
@@ -42,14 +42,14 @@ const CHILD_MINDING = new Set([
 ]);
 
 /* ----------------------------- Coaches + one-liners -------------------------- */
-/* NOTE: Ben’s image uses custom objectPosition to keep his head in frame */
+/* NOTE: Ben’s image uses stronger objectPosition to keep his head in frame */
 const COACHES = [
   {
     name: "Ben",
     role: "Owner & Coach",
     img: "/images/Ben.png",
     bio: "Pushes you until you drop and then tells you an awful Dad joke to make you smile.",
-    focus: "50% 12%", // nudge up (works on mobile & desktop)
+    focus: "50% 8%", // <<< nudged higher (was 12%)
   },
   {
     name: "Pren",
@@ -247,7 +247,7 @@ export default function BFTWynnumLanding() {
         </div>
       </Section>
 
-      {/* COACHES (2 columns on desktop; Ben & Pren first row) */}
+      {/* COACHES (2 columns on desktop; Ben & Pren first row; Ben focus high) */}
       <Section id="coaches">
         <h2 className="text-3xl font-extrabold">Meet Your Coaches</h2>
         <p className="mt-2 text-slate-600">Technique-obsessed, friendly, and here for your progress.</p>
@@ -258,7 +258,7 @@ export default function BFTWynnumLanding() {
               <img
                 src={c.img}
                 alt={c.name}
-                className="w-full h-72 md:h-64 object-cover"  // extra headroom
+                className="w-full h-80 md:h-64 object-cover"  // more vertical space on mobile
                 loading="lazy"
                 style={c.focus ? { objectPosition: c.focus } : undefined}
                 onError={(e) => (e.currentTarget.src = c.img.replace(".png", ".jpg"))}
