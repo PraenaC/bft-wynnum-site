@@ -4,7 +4,7 @@ import { useState } from "react";
    BFT Wynnum Landing
    - Hero (autoplay video + caption) + "Getting Started" above H1
    - Why / What's included
-   - Coaches (head-safe images + one-liner bios)  <-- Ben nudged up on all screens
+   - Coaches (Ben, Pren, Josh, Tyneale) — 2 columns on desktop; Ben focus nudged up
    - Timetable (childminding badges, no Sunday)
    - Kickstart form (Netlify Forms)
    - Group shot (no caption)
@@ -42,27 +42,20 @@ const CHILD_MINDING = new Set([
 ]);
 
 /* ----------------------------- Coaches + one-liners -------------------------- */
-/* NOTE: Ben’s image has a custom objectPosition to keep his head in frame on all screens */
+/* NOTE: Ben’s image uses custom objectPosition to keep his head in frame */
 const COACHES = [
   {
     name: "Ben",
     role: "Owner & Coach",
     img: "/images/Ben.png",
     bio: "Pushes you until you drop and then tells you an awful Dad joke to make you smile.",
-    focus: "50% 15%", // <— nudge up (affects mobile & desktop)
+    focus: "50% 12%", // nudge up (works on mobile & desktop)
   },
   {
     name: "Pren",
     role: "Owner & Coach",
     img: "/images/Pren.png",
     bio: "Our boss girl who brings the energy and keeps the vibe inclusive.",
-    focus: "50% 20%",
-  },
-  {
-    name: "Christian",
-    role: "Head Coach",
-    img: "/images/Christian.png",
-    bio: "Technique-focused and results-driven. Leads the floor with precision.",
     focus: "50% 20%",
   },
   {
@@ -254,18 +247,18 @@ export default function BFTWynnumLanding() {
         </div>
       </Section>
 
-      {/* COACHES (with one-liner bios) */}
+      {/* COACHES (2 columns on desktop; Ben & Pren first row) */}
       <Section id="coaches">
         <h2 className="text-3xl font-extrabold">Meet Your Coaches</h2>
         <p className="mt-2 text-slate-600">Technique-obsessed, friendly, and here for your progress.</p>
 
-        <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
           {COACHES.map((c) => (
             <Card key={c.name} className="overflow-hidden">
               <img
                 src={c.img}
                 alt={c.name}
-                className="w-full h-64 md:h-56 object-cover" // more headroom on mobile
+                className="w-full h-72 md:h-64 object-cover"  // extra headroom
                 loading="lazy"
                 style={c.focus ? { objectPosition: c.focus } : undefined}
                 onError={(e) => (e.currentTarget.src = c.img.replace(".png", ".jpg"))}
